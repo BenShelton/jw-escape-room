@@ -5,6 +5,7 @@ import GameNotFound from "./GameNotFound";
 import FrontPage from "./FrontPage";
 import SignUpPage from "./SignUpPage";
 import GameWelcomePage from "./GameWelcomePage";
+import HostDashboard from "./HostDashboard";
 import AuthContext from '../contexts/AuthContext';
 
 const AppRouter = () => (
@@ -12,6 +13,7 @@ const AppRouter = () => (
     <BrowserRouter>
       <Switch>
         <Route path="/" component={SignUpPage} exact />
+        <Route path="/dashboard" component={HostDashboard} exact />
         <Route path="/:gameId" component={GameWelcomePage} exact />
         <Route render={GameNotFound} />
       </Switch>
