@@ -1,24 +1,33 @@
 import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import GameNotFound from "./GameNotFound";
-import FrontPage from "./FrontPage";
 import SignUpPage from "./SignUpPage";
-import GameWelcomePage from "./GameWelcomePage";
+import Game from "./Game";
 import HostDashboard from "./HostDashboard";
-import AuthContext from '../contexts/AuthContext';
+import AuthContext from "../contexts/AuthContext";
+import LoginPage from "./LoginPage";
+import PrivateRoute from "./PrivateRoute";
+// import AnonCreate from "./AnonCreate";
+import GameContext from "../contexts/GameContext";
+// import GameContext from "../contexts/GameContext";
 
 const AppRouter = () => (
-  <AuthContext>
-    <BrowserRouter>
+  <Router>
+    <AuthContext>
       <Switch>
-        <Route path="/" component={SignUpPage} exact />
-        <Route path="/dashboard" component={HostDashboard} exact />
-        <Route path="/:gameId" component={GameWelcomePage} exact />
+        <Route path="/" component={LoginPage} exact />
+        <Route path="/register" component={SignUpPage} exact />
+        <PrivateRoute path="/dashboard" component={HostDashboard} exact />
+        <Route path="/play/:gameId" exact>
+          <GameContext>
+            <Game />
+          </GameContext>
+        </Route>
         <Route render={GameNotFound} />
       </Switch>
-    </BrowserRouter>
-  </AuthContext>
+    </AuthContext>
+  </Router>
 );
 
 export default AppRouter;
