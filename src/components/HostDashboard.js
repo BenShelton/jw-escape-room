@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
 
+import HostBase from "./HostBase";
 import { useAuth } from "../contexts/AuthContext";
 import GameSetup from "./GameSetup";
 
@@ -19,8 +20,9 @@ const HostDashboard = ({}) => {
 
   return (
     <>
-      <GameSetup />
-      <button onClick={handleLogout}>Logout</button>
+      <HostBase>
+        <button onClick={handleLogout}>Logout</button>
+      </HostBase>
     </>
   );
 };

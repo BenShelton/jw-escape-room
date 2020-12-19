@@ -45,12 +45,39 @@ class EscapeRoomContent {
 export default class CMSApi {
   static base = `${process.env.REACT_APP_CMS_API_BASE}/wp-json/wp/v2`;
 
-  static findRoom = slug => {
+  static findRoom = (slug, fields = []) => {
+    const endpoint = new URL(`${this.base}/rooms/`);
+    endpoint.searchParams.append("slug", slug);
+    endpoint.searchParams.append("per_page", 1);
+    endpoint.searchParams.append("_embed", "true");
+    console.log(endpoint.href);
     return axios
-      .get(`${this.base}/rooms/?slug=${slug}&per_page=1&_embed`)
+      .get(endpoint.href)
       .then(res => {
         if (res.data && res.data.length === 1) {
           return new EscapeRoomContent(res.data[0]);
+        }
+        throw new Error(`Escape room with slug ${slug} not found.`);
+      })
+      .catch(e => {
+        console.log(e);
+        throw e;
+      });
+  };
+
+  static getRoom = (slug, fields) => {
+    const endpoint = new URL(`${this.base}/rooms/`);
+    endpoint.searchParams.append("slug", slug);
+    endpoint.searchParams.append("per_page", 1);
+    endpoint.searchParams.append("_embed", "true");
+    if (fields.length) {
+      endpoint.searchParams.append("_fields", fields.join(","));
+    }
+    return axios
+      .get(endpoint.href)
+      .then(res => {
+        if (res.data && res.data.length === 1) {
+          return res.data[0];
         }
         throw new Error(`Escape room with slug ${slug} not found.`);
       })
