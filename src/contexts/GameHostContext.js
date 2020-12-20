@@ -96,13 +96,13 @@ const GameHostProvider = ({ children }) => {
     console.log("GAME STARTED!");
   };
 
-  const writeTeams = async () => {
+  const writeTeams = async dividedTeams => {
     const updates = {};
     const teamObj = {};
-    const teamIds = Object.keys(teams);
+    const teamIds = Object.keys(dividedTeams);
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i];
-      const team = teams[teamId];
+      const team = dividedTeams[teamId];
       team.forEach(player => {
         updates[`${baseRef}/players/${player.id}/team`] = teamId;
         if (player.leader === true) {

@@ -33,12 +33,11 @@ const useStyles = makeStyles(theme => ({
 const PickTeamStep = ({ numberOfTeams, ...rest }) => {
   const classes = useStyles();
 
-  const { teams, setTeams, players, writeTeams, setStage } = useGameHost();
+  const { players, writeTeams, setStage } = useGameHost();
   // players = { adfasdf : {name: Julian}, sdhasdf: {name: Levy} }
 
   const [unassignedPlayers, setUnassignedPlayers] = useState([]);
-
-  // const [teams, setTeams] = useState({});
+  const [dividedTeams, setDividedTeams] = useState({});
 
   const [error, setError] = useState("");
 
@@ -47,7 +46,7 @@ const PickTeamStep = ({ numberOfTeams, ...rest }) => {
     for (let i = 0; i < numberOfTeams; i++) {
       teamsObj[nanoid()] = [];
     }
-    setTeams(teamsObj);
+    setDividedTeams(teamsObj);
   }, [numberOfTeams]);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ const PickTeamStep = ({ numberOfTeams, ...rest }) => {
       return setError(`Please assign all players to a team.`);
     }
     // loop through all teams to check for team leader
-    const teamObjs = Object.values(teams);
+    const teamObjs = Object.values(dividedTeams);
     for (let i = 0; i < teamObjs.length; i++) {
       const leader = _.find(teamObjs[i], ["leader", true]);
       if (!leader) {
@@ -71,12 +70,12 @@ const PickTeamStep = ({ numberOfTeams, ...rest }) => {
       }
     }
     // store teams in ledger
-    await writeTeams();
+    await writeTeams(dividedTeams);
     setStage("ready");
   };
 
   const handleUnassign = (playerId, teamId) => {
-    setTeams(prevState => ({
+    setDividedTeams(prevState => ({
       ...prevState,
       [teamId]: prevState[teamId].filter(({ id }) => id !== playerId)
     }));
@@ -90,7 +89,7 @@ const PickTeamStep = ({ numberOfTeams, ...rest }) => {
       prevState.filter(({ id }) => id !== playerId)
     );
     // assign to correct team
-    setTeams(prevState => ({
+    setDividedTeams(prevState => ({
       ...prevState,
       [teamId]: prevState[teamId].concat({
         id: playerId,
@@ -100,7 +99,7 @@ const PickTeamStep = ({ numberOfTeams, ...rest }) => {
   };
 
   const assignLeader = (playerId, teamId) => {
-    setTeams(prevState => ({
+    setDividedTeams(prevState => ({
       ...prevState,
       [teamId]: prevState[teamId].map(player => {
         if (player.id === playerId) {
@@ -133,12 +132,12 @@ const PickTeamStep = ({ numberOfTeams, ...rest }) => {
         </div>
       </div>
       <Grid container spacing={3}>
-        {Object.keys(teams).map((teamId, index) => (
+        {Object.keys(dividedTeams).map((teamId, index) => (
           <Grid key={teamId} item xs>
             <div className={classes.teamGroup}>
               <p>{`Team ${index + 1}`}</p>
               <div className={classes.chipContainer}>
-                {teams[teamId].map(player => (
+                {dividedTeams[teamId].map(player => (
                   <Chip
                     key={player.id}
                     icon={player.leader && <ScreenShareIcon />}
