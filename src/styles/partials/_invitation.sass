@@ -1,0 +1,68 @@
+.invitation
+  color: #fff
+
+  &__text
+    position: relative
+    top: 10em
+    text-align: center
+    padding: 20px
+
+    h2
+      font-size: 1.3em
+      margin-bottom: 20px
+
+    h1
+      font-size: 4em
+      margin-bottom: 20px
+      font-weight: bold
+      // text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2)
+
+  &__counter-container
+    position: absolute
+    bottom: 0
+    left: 0
+    text-align: center
+    width: 100%
+
+  &__countdown
+    margin-top: 20px
+    padding-bottom: 3em
+    max-width: 100%
+
+    &__wrapper
+      display: flex
+      justify-content: center
+
+      & li
+        margin-right: 40px
+
+        &:last-child
+          margin-right: 0
+
+    &__value
+      font-size: 6em
+      font-weight: bold
+
+    &__label
+      font-size: 1em
+      font-weight: bold
+      text-transform: lowercase
+
+  &__date
+    font-size: 1.2em
+
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
+  .invitation
+    font-size: 12px
+
+    &__countdown
+      font-size: 9px
+      max-width: 400px
+      margin: 20px auto 0 auto
+
+      &__wrapper
+        padding: 0 5px
+        justify-content: space-between
+
+        & li
+          margin-right: 0

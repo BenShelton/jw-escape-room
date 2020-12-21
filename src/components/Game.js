@@ -2,38 +2,60 @@ import { React, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
+import { AllHtmlEntities as Entities } from "html-entities";
+
+// import "normalize.css/normalize.css";
+import "../styles/main.sass";
 
 import { useGame } from "../contexts/GameContext";
 // import CMSApi from "../classes/CMSApi";
 
+const entities = new Entities();
+
+const Counter = ({ days, hours, minutes, seconds, completed }) => (
+  <div className="invitation__countdown">
+    <ul className="invitation__countdown__wrapper">
+      <li>
+        <p className="invitation__countdown__value">{zeroPad(days)}</p>
+        <p className="invitation__countdown__label">Days</p>
+      </li>
+      <li>
+        <p className="invitation__countdown__value">{zeroPad(hours)}</p>
+        <p className="invitation__countdown__label">Hours</p>
+      </li>
+      <li>
+        <p className="invitation__countdown__value">{zeroPad(minutes)}</p>
+        <p className="invitation__countdown__label">Minutes</p>
+      </li>
+      <li>
+        <p className="invitation__countdown__value">{zeroPad(seconds)}</p>
+        <p className="invitation__countdown__label">Seconds</p>
+      </li>
+    </ul>
+  </div>
+);
+
 const Invitation = ({ game, room, msg }) => (
-  <>
-    <p>You're Invited to</p>
-    <p>{room && room.title}</p>
-    <p>Hosted by {game && game.host.name}</p>
-    {room && <img alt="" src={room.coverImage("thumbnail")} />}
-    <p>
-      {game &&
-        moment
-          .unix(game.scheduledTime.seconds)
-          .format("MMMM Do, YYYY [at] h:mm a")}
-    </p>
-    <Countdown
-      date={moment.unix(game.scheduledTime.seconds).toDate()}
-      renderer={({ days, hours, minutes, seconds, completed }) => {
-        if (completed) {
-          return <p>done</p>;
-        } else {
-          return (
-            <p>
-              {zeroPad(days)} : {zeroPad(hours)} : {zeroPad(minutes)} :{" "}
-              {zeroPad(seconds)}
-            </p>
-          );
-        }
-      }}
-    />
-  </>
+  <div className="invitation">
+    <div className="invitation__text">
+      <h2>You're Invited to</h2>
+      <h1>{room && entities.decode(room.title)}</h1>
+      <h2>Hosted by {game && game.host.name}</h2>
+    </div>
+
+    <div className="invitation__counter-container">
+      <p className="invitation__date">
+        {game &&
+          moment
+            .unix(game.scheduledTime.seconds)
+            .format("MMMM Do, YYYY [at] h:mm a")}
+      </p>
+      <Countdown
+        date={moment.unix(game.scheduledTime.seconds).toDate()}
+        renderer={props => <Counter {...props} />}
+      />
+    </div>
+  </div>
 );
 
 const Enter = ({ currentPlayer, enterPlayer, setEntered }) => {
@@ -78,13 +100,13 @@ const Game = props => {
     switch (stage) {
       case "dormant":
         if (moment().isAfter(moment.unix(game.scheduledTime.seconds))) {
+          return setScreen("enter");
           // scheduled time has passed, ask for name
-          return setScreen("invite");
         }
         if (entered === true) {
           return setScreen("waiting");
         }
-        return setScreen("enter");
+        return setScreen("invite");
       case "collecting":
         if (entered === true) {
           // player already chose name
@@ -96,25 +118,36 @@ const Game = props => {
     }
   }, [stage]);
 
-  switch (screen) {
-    case "invite":
-      return <Invitation room={room} game={game} setScreen={setScreen} />;
-    case "enter":
-      return (
-        <Enter
-          room={room}
-          game={game}
-          currentPlayer={currentPlayer}
-          enterPlayer={enterPlayer}
-          setEntered={setEntered}
-        />
-      );
-    case "waiting":
-      return <Waiting />;
+  const getScreen = screenToRender => {
+    switch (screenToRender) {
+      case "invite":
+        return <Invitation room={room} game={game} setScreen={setScreen} />;
+      case "enter":
+        return (
+          <Enter
+            room={room}
+            game={game}
+            currentPlayer={currentPlayer}
+            enterPlayer={enterPlayer}
+            setEntered={setEntered}
+          />
+        );
+      case "waiting":
+        return <Waiting />;
 
-    default:
-      return <Waiting />;
-  }
+      default:
+        return <Waiting />;
+    }
+  };
+
+  return (
+    <main
+      className="game-wrapper"
+      style={{ backgroundImage: `url(${room.coverImage("full")})` }}
+    >
+      {getScreen(screen)}
+    </main>
+  );
 };
 
 export default Game;
