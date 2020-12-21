@@ -38,7 +38,13 @@ const GameHostProvider = ({ children }) => {
         return { ...mod };
       })
     );
-    return { unsubscribeAdd, unsubscribeRemove };
+    const unsubscribeChange = playersRef.on("child_changed", snapshot =>
+      setPlayers(prevState => ({
+        ...prevState,
+        [snapshot.getRef().getKey()]: snapshot.val()
+      }))
+    );
+    return { unsubscribeAdd, unsubscribeRemove, unsubscribeChange };
   };
 
   const initStageListener = () => {
@@ -50,17 +56,10 @@ const GameHostProvider = ({ children }) => {
   };
 
   const initTeamListener = () => {
-    // get current teams if they exist
-    teamsRef.once("value", snapshot => {
-      // snapshot.exists() ? setTeams(snapshot.val()) : null
-      console.log("teams", snapshot.exists());
+    const unsubscribeAdd = teamsRef.on("value", snapshot => {
+      setTeams(snapshot.val());
     });
-    // return teamsRef.on("child_changed", snapshot =>
-    //   setTeams(prevState => ({
-    //     ...prevState,
-    //     [snapshot.getRef().getKey()]: snapshot.val()
-    //   }))
-    // );
+    return { unsubscribeAdd };
   };
 
   const initGame = async () => {
@@ -69,7 +68,7 @@ const GameHostProvider = ({ children }) => {
       .collection("games")
       .doc(gameId)
       .get();
-    if (!foundGame) {
+    if (!foundGame.exists) {
       return setError(`Game with id ${gameId} not found.`);
     }
     setGame({ ...foundGame.data(), id: foundGame.id });

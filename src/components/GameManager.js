@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import _ from "lodash";
 
 import { useGameHost } from "../contexts/GameHostContext";
 import Block from "./Block";
@@ -13,50 +14,61 @@ const useStyles = makeStyles(theme => ({
 
 const TeamStatus = ({ team }) => {
   const classes = useStyles();
-  const { players } = useGameHost();
 
   return (
     <div className={classes.teamGroup}>
       <Typography>
         Players:
-        {Object.keys(players).map(id => {
-          const { name, team: teamId } = players[id];
-          if (teamId === team.id) {
-            return id === team.leader ? (
-              <strong> {name} </strong>
-            ) : (
-              <span> {name} </span>
-            );
-          }
-        })}
-      </Typography>
+        {team.players.map(player =>
+          player.leader ? (
+            <strong> {player.name} </strong>
+          ) : (
+            <span> {player.name} </span>
+          )
+        )}
+      </Typography>{" "}
+      &nbsp; &nbsp; &nbsp;
+      <Typography>Current Challenge: {team.challenge}</Typography>
     </div>
   );
 };
 
-const GameManager = ({}) => {
-  const [teams, setTeams] = useState({});
+const GameManager = () => {
+  const { teams, players } = useGameHost();
 
-  const { teamsRef } = useGameHost();
+  const [populatedTeams, setPopulatedTeams] = useState([]);
+
+  // OPTIMIZE: better algorithm here
+  const getTeamPlayers = teamId => {
+    const team = teams[teamId];
+    const teamPlayers = [];
+    Object.keys(players).forEach(playerId => {
+      const player = players[playerId];
+      if (player.team === teamId) {
+        if (playerId === team.leader) {
+          return teamPlayers.push({ ...player, leader: true });
+        }
+        teamPlayers.push(player);
+      }
+    });
+    return teamPlayers;
+  };
+
+  const buildTeamArray = () =>
+    Object.keys(teams).map(id => ({
+      id,
+      ...teams[id],
+      players: getTeamPlayers(id)
+    }));
 
   useEffect(() => {
-    // FIXME: this should be gotten from current state
-    // but it has to be mutated die to poor design
-    // get teams from rdb
-    teamsRef.once("value", snapshot => setTeams(snapshot.val()));
-    teamsRef.on("child_changed", snapshot =>
-      setTeams(prevState => ({
-        ...prevState,
-        [snapshot.getRef().getKey()]: snapshot.val()
-      }))
-    );
-  }, []);
+    setPopulatedTeams(prevState => buildTeamArray());
+  }, [teams]);
 
   return (
     <Block>
-      {Object.keys(teams).map(teamId => (
-        <TeamStatus team={{ id: teamId, ...teams[teamId] }} />
-      ))}
+      {populatedTeams.length &&
+        populatedTeams.map(team => <TeamStatus team={team} />)}
     </Block>
   );
 };
