@@ -38,7 +38,7 @@ const Counter = ({ days, hours, minutes, seconds, completed }) => (
 const Invitation = ({ game, room, msg }) => (
   <div className="invitation">
     <div className="invitation__text">
-      <h2>You're Invited to</h2>
+      <h2>You Are Invited To</h2>
       <h1>{room && entities.decode(room.title)}</h1>
       <h2>Hosted by {game && game.host.name}</h2>
     </div>
@@ -142,10 +142,20 @@ const Game = props => {
 
   return (
     <main
-      className="game-wrapper"
+      className="game"
       style={{ backgroundImage: `url(${room.coverImage("full")})` }}
     >
-      {getScreen(screen)}
+      {room.hasVideo && (
+        <video
+          autoPlay
+          loop
+          muted
+          className="game__intro-video"
+          id="js-intro-video"
+          src="http://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
+        ></video>
+      )}
+      <div className="game__screen">{getScreen(screen)}</div>
     </main>
   );
 };

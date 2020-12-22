@@ -6,8 +6,20 @@ html, body
   font-family: 'Roboto', sans-serif
   -webkit-font-smoothing: antialiased
 
-.game-wrapper
+.game
   min-height: 100vh
   background-position: center center
   background-repeat: no-repeat
   background-size: cover
+
+  &__intro-video
+    position: fixed
+    bottom: 0
+    left: 0
+    min-height: 100%
+    min-width: 100%
+    z-index: 1
+
+  &__screen
+    z-index: 2
+    position: relative
