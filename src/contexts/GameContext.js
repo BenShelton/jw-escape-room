@@ -71,7 +71,10 @@ function GameProvider({ children }) {
 
   const findRoom = async slug => {
     try {
+      var t0 = performance.now();
       let foundRoom = await CMSApi.findRoom(slug);
+      var t1 = performance.now();
+      console.log("Call to wp api took " + (t1 - t0) + " milliseconds.");
       setRoom(foundRoom);
       return foundRoom;
     } catch (e) {

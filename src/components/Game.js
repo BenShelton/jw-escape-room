@@ -1,8 +1,9 @@
 import { React, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
 import { AllHtmlEntities as Entities } from "html-entities";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
@@ -58,7 +59,7 @@ const Invitation = ({ game, room, msg }) => (
   </div>
 );
 
-const Enter = ({ currentPlayer, enterPlayer, setEntered }) => {
+const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   const [name, setName] = useState("");
   const [error, setError] = useState();
 
@@ -72,23 +73,43 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered }) => {
     e.preventDefault();
     await enterPlayer(name);
     setEntered(true);
+    setScreen("waiting");
   };
 
   return (
-    <form onSubmit={handleSubmit} action="">
-      <label>Please enter your name</label>
-      <input
-        value={name}
-        onChange={e => setName(e.target.value)}
-        required
-        name="player-name"
-        type="text"
-      />
-    </form>
+    <div className="game__screen__enter">
+      <div className="game__screen__enter__inner">
+        <form noValidate onSubmit={handleSubmit}>
+          <label htmlFor="player-name-input">enter your name</label>
+          <div className="game__screen__enter__input-row">
+            <input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              id="player-name-input"
+              name="player-name"
+              type="text"
+            />
+            <button
+              className={`submit ${name.length ? "submit--show" : ""}`}
+              type="submit"
+            >
+              <ChevronRightIcon style={{ color: "#00dbff" }} />
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
-const Waiting = () => <p>Waiting for Host</p>;
+const Waiting = ({ text }) => (
+  <div className="game__screen__waiting">
+    <div className="game__screen__waiting__inner">
+      <p>{text || "waiting for host"}</p>
+      <CircularProgress style={{ color: "#fff" }} />
+    </div>
+  </div>
+);
 
 const Game = props => {
   let { game, room, stage, currentPlayer, enterPlayer } = useGame();
@@ -130,6 +151,7 @@ const Game = props => {
             currentPlayer={currentPlayer}
             enterPlayer={enterPlayer}
             setEntered={setEntered}
+            setScreen={setScreen}
           />
         );
       case "waiting":
@@ -145,7 +167,7 @@ const Game = props => {
       className="game"
       style={{ backgroundImage: `url(${room.coverImage("full")})` }}
     >
-      {room.hasVideo && (
+      {true && (
         <video
           autoPlay
           loop
