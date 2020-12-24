@@ -22,7 +22,7 @@ function GameProvider({ children }) {
   useEffect(() => {
     const initGame = async () => {
       let gameData = await findGame(gameId);
-      await findRoom(gameData.room);
+      await findRoom(gameData.room.id);
       initRDBListeners();
       setLoading(false);
     };
@@ -69,14 +69,14 @@ function GameProvider({ children }) {
   };
 
   const findRoom = async slug => {
-    const foundRoom = db
+    const foundRoom = await db
       .collection("rooms")
       .doc(slug)
       .get();
     if (!foundRoom.exists) {
       return setError(`Room with slug ${slug} not found in firestore`);
     }
-    setRoom(foundRoom);
+    setRoom(foundRoom.data());
   };
 
   const initRDBListeners = ledger => {

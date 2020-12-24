@@ -165,13 +165,16 @@ const Game = props => {
   return (
     <main
       className="game"
-      style={{ backgroundImage: `url(${room.intro.background})})` }}
+      style={{ backgroundImage: `url(${room.intro.background})` }}
     >
-      {true && (
+      {console.log(room.intro.background)}
+
+      {false && (
         <video
           autoPlay
           loop
           muted
+          playsInline
           className="game__intro-video"
           id="js-intro-video"
           src="http://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"

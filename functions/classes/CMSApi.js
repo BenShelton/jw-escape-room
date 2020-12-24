@@ -1,6 +1,11 @@
 const axios = require("axios");
+const https = require("https");
 
-const base = `http://jwer.brotherapp.org/wp-json/wp/v2`;
+const base = `https://jwer.brotherapp.org/wp-json/wp/v2`;
+
+const agent = new https.Agent({
+  rejectUnauthorized: false
+});
 
 class EscapeRoom {
   constructor(rawContent) {
@@ -118,7 +123,7 @@ class EscapeRoom {
       "id,status,acf,content.rendered,title"
     );
     endpoint.searchParams.append("include", this.challengeMap.join(","));
-    const res = await axios.get(endpoint.href);
+    const res = await axios.get(endpoint.href, { httpsAgent: agent });
     if (!res.data || !res.data.length) return;
     this.challenges = res.data;
   }
@@ -145,7 +150,7 @@ class CMSApi {
     endpoint.searchParams.append("_embed", "true");
     let res = null;
     try {
-      res = await axios.get(endpoint.href);
+      res = await axios.get(endpoint.href, { httpsAgent: agent });
     } catch (e) {
       console.error(e.message);
     }
@@ -161,7 +166,7 @@ class CMSApi {
     endpoint.searchParams.append("per_page", 1);
     endpoint.searchParams.append("_embed", "true");
     return axios
-      .get(endpoint.href)
+      .get(endpoint.href, { httpsAgent: agent })
       .then(res => {
         if (res.data && res.data.length === 1) {
           return new EscapeRoom(res.data[0]);
@@ -183,7 +188,7 @@ class CMSApi {
       endpoint.searchParams.append("_fields", fields.join(","));
     }
     return axios
-      .get(endpoint.href)
+      .get(endpoint.href, { httpsAgent: agent })
       .then(res => {
         if (res.data && res.data.length === 1) {
           return res.data[0];
