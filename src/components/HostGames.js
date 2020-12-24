@@ -5,8 +5,9 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import _ from "lodash";
+import { AllHtmlEntities as Entities } from "html-entities";
 
-import CMSApi from "../classes/CMSApi";
 import Title from "./Title";
 import db from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,12 +15,13 @@ import HostBase, { useStyles } from "./HostBase";
 import GameSetup from "./GameSetup";
 import Block from "./Block";
 
+const entities = new Entities();
+
 const GameList = () => {
   const [games, setGames] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const { currentUser } = useAuth();
 
-  // OPTIMIZE: get room names another way,
-  // too many calls to CMS
   const getGames = async () => {
     const hostRef = db.collection("users").doc(currentUser.uid);
     const gameSnapshots = await db
@@ -31,18 +33,24 @@ const GameList = () => {
       const gameData = { ...doc.data(), id: doc.id };
       gameObjs.push(gameData);
     });
-    const roomNames = {};
+    // get rooms
+    const foundRooms = await db.collection("rooms").get();
+    foundRooms.forEach(doc =>
+      setRooms(prevState => ({
+        ...prevState,
+        [doc.id]: doc.data().title
+      }))
+    );
     // get room names
-    for (var i = 0; i < gameObjs.length; i++) {
-      const slug = gameObjs[i].room;
-      if (!roomNames[slug]) {
-        const res = await CMSApi.getRoom(slug, ["title"]);
-        roomNames[slug] = res.title.rendered;
-        console.log("name", res.title.rendered);
-      }
-      gameObjs[i].room = roomNames[slug];
-    }
-    console.log(gameObjs);
+    // for (var i = 0; i < gameObjs.length; i++) {
+    //   const slug = gameObjs[i].room;
+    //   if (!roomNames[slug]) {
+    //     const res = await CMSApi.getRoom(slug, ["title"]);
+    //     roomNames[slug] = res.title.rendered;
+    //     console.log("name", res.title.rendered);
+    //   }
+    //   gameObjs[i].room = roomNames[slug];
+    // }
     setGames(gameObjs);
   };
 
@@ -61,7 +69,7 @@ const GameList = () => {
           button
         >
           <ListItemText
-            primary={game.room}
+            primary={rooms && entities.decode(rooms[game.room.id])}
             secondary={moment
               .unix(game.scheduledTime.seconds)
               .format("MMMM Do, YYYY")}

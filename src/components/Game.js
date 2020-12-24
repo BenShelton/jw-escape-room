@@ -165,7 +165,7 @@ const Game = props => {
   return (
     <main
       className="game"
-      style={{ backgroundImage: `url(${room.coverImage("full")})` }}
+      style={{ backgroundImage: `url(${room.intro.background})})` }}
     >
       {true && (
         <video

@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import CMSApi from "../classes/CMSApi";
 import db, { auth, rdb } from "../firebase";
 
 const GameContext = React.createContext();
@@ -10,7 +9,7 @@ function GameProvider({ children }) {
   const [currentPlayer, setCurrentPlayer] = useState();
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
-  const [room, setRoom] = useState(null);
+  const [room, setRoom] = useState({});
   const [error, setError] = useState("");
   const [stage, setStage] = useState("");
 
@@ -70,16 +69,14 @@ function GameProvider({ children }) {
   };
 
   const findRoom = async slug => {
-    try {
-      var t0 = performance.now();
-      let foundRoom = await CMSApi.findRoom(slug);
-      var t1 = performance.now();
-      console.log("Call to wp api took " + (t1 - t0) + " milliseconds.");
-      setRoom(foundRoom);
-      return foundRoom;
-    } catch (e) {
-      setError(e.message);
+    const foundRoom = db
+      .collection("rooms")
+      .doc(slug)
+      .get();
+    if (!foundRoom.exists) {
+      return setError(`Room with slug ${slug} not found in firestore`);
     }
+    setRoom(foundRoom);
   };
 
   const initRDBListeners = ledger => {
