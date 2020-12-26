@@ -12,6 +12,10 @@ function GameProvider({ children }) {
   const [room, setRoom] = useState({});
   const [error, setError] = useState("");
   const [stage, setStage] = useState("");
+  const [teams, setTeams] = useState({});
+  const [players, setPlayers] = useState({});
+  const [startTime, setStartTime] = useState();
+  const [leader, setLeader] = useState();
 
   let { gameId } = useParams();
   const baseRef = `/games/${gameId}`;
@@ -30,10 +34,8 @@ function GameProvider({ children }) {
     const initPlayer = async () => {
       const unsubscribe = auth.onAuthStateChanged(player => {
         if (player) {
-          console.log("already in");
           return setCurrentPlayer(player);
         }
-        console.log("checking in");
         checkIn();
       });
       return unsubscribe;
@@ -64,7 +66,6 @@ function GameProvider({ children }) {
     const host = await findHost(foundGame.data().host.id);
     const gameData = { ...foundGame.data(), host };
     setGame(gameData);
-    console.log("game data", gameData);
     return gameData;
   };
 
@@ -79,36 +80,50 @@ function GameProvider({ children }) {
     setRoom(foundRoom.data());
   };
 
+  /**
+   * Get teams from firebase after creation
+   */
+  const getTeams = async () => {
+    // get created teams
+    let snapshotTeams = await rdb.ref(`${baseRef}/teams`).once("value");
+    setTeams(snapshotTeams.val());
+    // get players
+    let snapshotPlayers = await rdb.ref(`${baseRef}/players`).once("value");
+    setPlayers(snapshotPlayers.val());
+    const { team } = snapshotPlayers.val()[currentPlayer.uid];
+    // set current player's team
+    setCurrentPlayer(prevState => ({ ...prevState, team }));
+    const teamLeaderId = snapshotTeams.val()[team].leader;
+    const teamLeader = {
+      id: teamLeaderId,
+      ...snapshotPlayers.val()[teamLeaderId]
+    };
+    setLeader(teamLeader);
+    console.log("the leader", teamLeader);
+    console.log("pid", currentPlayer.uid);
+  };
+
   const initRDBListeners = ledger => {
     // teams listener
-    const unsubscribeTeams = rdb
-      .ref(`${baseRef}/teams`)
-      .on("value", snapshot => {
-        console.log("LISTENING ON /teams", snapshot.val());
-      });
-    // players listener
-    const unsubscribePlayers = rdb
-      .ref(`${baseRef}/players`)
-      .on("value", snapshot => {
-        console.log("LISTENING ON /players", snapshot.val());
-      });
+    // const unsubscribeTeams = rdb
+    //   .ref(`${baseRef}/teams`)
+    //   .on("value", snapshot => setTeams(snapshot.val()));
+    // // players listener
+    // const unsubscribePlayers = rdb
+    //   .ref(`${baseRef}/players`)
+    //   .on("value", snapshot => setPlayers(snapshot.val()));
     // startTime listener
     const unsubscribeStartTime = rdb
-      .ref(`${baseRef}/teams`)
-      .on("value", snapshot => {
-        console.log("LISTENING ON /startTime", snapshot.val());
-      });
+      .ref(`${baseRef}/startTime`)
+      .on("value", snapshot => setStartTime(snapshot.val()));
     // stage listener
     const unsubscribeStage = rdb
       .ref(`${baseRef}/stage`)
       .on("value", snapshot => {
         setStage(snapshot.val());
-        console.log("LISTENING ON /stage", snapshot.val());
       });
     // return unsubscribers
     return {
-      unsubscribeTeams,
-      unsubscribePlayers,
       unsubscribeStartTime,
       unsubscribeStage
     };
@@ -134,7 +149,11 @@ function GameProvider({ children }) {
     game,
     room,
     stage,
-    enterPlayer
+    enterPlayer,
+    teams,
+    players,
+    getTeams,
+    leader
   };
 
   return (

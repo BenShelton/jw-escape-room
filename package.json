@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "clsx": "^1.1.1",
+    "color-rgba": "^2.2.3",
     "dotenv": "^8.2.0",
     "firebase": "^8.1.2",
     "html-entities": "^1.4.0",
@@ -28,6 +29,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-simple-drag-n-drop": "^1.0.4",
+    "string-to-color": "^2.2.2",
     "web-vitals": "^0.2.4",
     "wpapi": "^1.2.1"
   },

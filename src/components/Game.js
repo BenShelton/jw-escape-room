@@ -102,21 +102,40 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   );
 };
 
-const Waiting = ({ text }) => (
+const Waiting = ({ text, subtext }) => (
   <div className="game__screen__waiting">
     <div className="game__screen__waiting__inner">
-      <p>{text || "waiting for host"}</p>
+      <p className="game__screen__waiting__heading">
+        {text || "waiting for host"}
+      </p>
+      {subtext && <p className="game__screen__waiting__subtext">{subtext}</p>}
       <CircularProgress style={{ color: "#fff" }} />
     </div>
   </div>
 );
 
 const Game = props => {
-  let { game, room, stage, currentPlayer, enterPlayer } = useGame();
+  let {
+    teams,
+    game,
+    room,
+    stage,
+    players,
+    currentPlayer,
+    enterPlayer,
+    getTeams,
+    leader
+  } = useGame();
   let [entered, setEntered] = useState(false);
   let [screen, setScreen] = useState("");
+  let [team, setTeam] = useState();
 
   useEffect(() => {
+    // find player's team
+  }, [team]);
+
+  useEffect(() => {
+    console.log(`Deciding screen on stage ${stage}`);
     // determine stage of local app
     switch (stage) {
       case "dormant":
@@ -125,21 +144,27 @@ const Game = props => {
           // scheduled time has passed, ask for name
         }
         if (entered === true) {
-          return setScreen("waiting");
+          return setScreen("waiting:host");
         }
         return setScreen("invite");
       case "collecting":
         if (entered === true) {
           // player already chose name
-          return setScreen("waiting");
+          return setScreen("waiting:host");
         }
         return setScreen("enter");
+      case "dividing":
+        return setScreen("waiting:teams");
+      case "ready":
+        getTeams();
+        return setScreen("waiting:startgame");
       default:
-        return setScreen("waiting");
+        return setScreen("loading");
     }
   }, [stage]);
 
   const getScreen = screenToRender => {
+    console.log(`Rendering screen ${screenToRender}`);
     switch (screenToRender) {
       case "invite":
         return <Invitation room={room} game={game} setScreen={setScreen} />;
@@ -154,11 +179,29 @@ const Game = props => {
             setScreen={setScreen}
           />
         );
-      case "waiting":
+      case "waiting:host":
         return <Waiting />;
-
+      case "waiting:teams":
+        return <Waiting text="Host is dividing teams" />;
+      case "waiting:startgame":
+        return (
+          <>
+            {leader && (
+              <Waiting
+                text="Waiting on host to start game"
+                subtext={
+                  leader.id === currentPlayer.uid
+                    ? "You are team leader. Please make sure that you are able to share this screen."
+                    : console.log("no team leader")
+                }
+              />
+            )}
+          </>
+        );
+      case "loading":
+        return <Waiting text="Loading" />;
       default:
-        return <Waiting />;
+        return <Waiting text="Loading" />;
     }
   };
 
@@ -167,8 +210,6 @@ const Game = props => {
       className="game"
       style={{ backgroundImage: `url(${room.intro.background})` }}
     >
-      {console.log(room.intro.background)}
-
       {false && (
         <video
           autoPlay
