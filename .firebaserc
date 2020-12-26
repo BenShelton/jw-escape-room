@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "jw-escape-rooms"
+  },
+  "targets": {
+    "jw-escape-rooms": {
+      "hosting": {
+        "admin": [
+          "jwzoom-admin"
+        ]
+      }
+    }
   }
 }
