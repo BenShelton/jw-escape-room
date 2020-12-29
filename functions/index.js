@@ -4,27 +4,8 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 admin.firestore().settings({ ignoreUndefinedProperties: true });
 const _ = require("lodash");
-// const db = admin.firestore();
 
 const CMSApi = require("./classes/CMSApi");
-
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", { structuredData: true });
-//   try {
-//     admin
-//       .firestore()
-//       .collection("rooms")
-//       .doc("thisnewid")
-//       .set({ now: Date.now() });
-//   } catch (e) {
-//     console.log(e);
-//   }
-//
-//   response.send("Hello from Firebase!");
-// });
 
 exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
   let rooms = await CMSApi.getAllRooms();
@@ -77,10 +58,3 @@ exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
     rooms: rooms.length
   });
 });
-
-// exports.tester = functions.https.onRequest((req, res) => {
-//   return db
-//     .collection("rooms")
-//     .doc("thishere")
-//     .set(Date.now());
-// });
