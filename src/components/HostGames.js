@@ -22,6 +22,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import _ from "lodash";
 
 import Title from "./Title";
@@ -102,12 +105,33 @@ const DeleteGameDialog = ({ game, setGames, open, close }) => {
 const GameList = ({ openGameDialog, games, rooms, setGames }) => {
   const classes = useStyles();
 
+  const selectedGameInit = {
+    anchorEl: null,
+    game: null
+  };
+
   const [sortedGames, setSortedGames] = useState([]);
-  const [pendingDeletion, setPendingDeletion] = useState();
+  const [pendingDeletion, setPendingDeletion] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(selectedGameInit);
+
+  const handleMenuClose = () => setSelectedGame(selectedGameInit);
+
+  const handleGameOptions = (game, anchorEl) => {
+    setSelectedGame({ game, anchorEl });
+  };
 
   const closeDialog = () => {
-    console.log("trying to close");
-    setPendingDeletion(null);
+    setPendingDeletion(false);
+  };
+
+  const handleEditGame = () => {
+    openGameDialog(selectedGame.game);
+    handleMenuClose();
+  };
+
+  const handleDeleteGame = () => {
+    setPendingDeletion(true);
+    // OPTIMIZE: close simple here, but next event relies on it
   };
 
   useEffect(() => {
@@ -136,6 +160,12 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
               />
               <ListItemSecondaryAction>
                 <IconButton
+                  onClick={e => handleGameOptions(game, e.currentTarget)}
+                  aria-label="edit"
+                >
+                  <MoreHorizIcon />
+                </IconButton>
+                {/* <IconButton
                   onClick={() => openGameDialog(game)}
                   aria-label="edit"
                 >
@@ -147,15 +177,25 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
                   aria-label="delete"
                 >
                   <DeleteIcon />
-                </IconButton>
+                </IconButton> */}
               </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
+        <Menu
+          anchorEl={selectedGame.anchorEl}
+          keepMounted
+          open={Boolean(selectedGame.anchorEl)}
+          onClose={handleMenuClose}
+        >
+          {/* OPTIMIZE: add button icons */}
+          <MenuItem onClick={handleEditGame}>Edit</MenuItem>
+          <MenuItem onClick={handleDeleteGame}>Delete</MenuItem>
+        </Menu>
       </Paper>
       <DeleteGameDialog
-        open={Boolean(pendingDeletion)}
-        game={pendingDeletion}
+        open={pendingDeletion}
+        game={selectedGame.game}
         setGames={setGames}
         close={closeDialog}
       />
