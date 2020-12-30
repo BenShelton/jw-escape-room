@@ -87,7 +87,7 @@ const BeginGameStep = ({ ...rest }) => {
         Opening the game will allow players to enter their name and sign in.
       </Typography>
       <Typography>
-        <strong>{`${process.env.REACT_APP_SITE_URL}/play/${game.id}`}</strong>
+        <strong>{`https://escaperoom.jwzoom.games/${game.id}`}</strong>
       </Typography>
     </SetupStep>
   );
@@ -183,14 +183,6 @@ const GameSetup = () => {
     const currentStage = mapStageToStep(stage);
     setActiveStep(currentStage >= 0 ? currentStage : -1);
   }, [stage]);
-
-  // const nextStep = (done = false) => {
-  //   // logic based on stage
-  //   setActiveStep(prevActiveStep => prevActiveStep + 1);
-  //   if (done) {
-  //     setComplete(true);
-  //   }
-  // };
 
   return (
     <Block>

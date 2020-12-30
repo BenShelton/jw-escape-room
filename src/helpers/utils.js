@@ -1,3 +1,6 @@
+import { AllHtmlEntities as Entities } from "html-entities";
+const entities = new Entities();
+
 export const getSubdomain = (location, dev) => {
   // remove protocol
   location = location.replace(/^https?:\/\//, "");
@@ -9,3 +12,5 @@ export const getSubdomain = (location, dev) => {
   const subdomain = split.length === triggerLength ? split[0] : null;
   return subdomain;
 };
+
+export const render = html => entities.decode(html);

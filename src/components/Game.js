@@ -218,7 +218,7 @@ const Game = props => {
           playsInline
           className="game__intro-video"
           id="js-intro-video"
-          src="http://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
+          src="https://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
         ></video>
       )}
       <div className="game__screen">{getScreen(screen)}</div>
