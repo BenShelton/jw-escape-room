@@ -1,5 +1,6 @@
 import "date-fns";
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -29,15 +30,18 @@ import { useAuth } from "../contexts/AuthContext";
 import { render } from "../helpers/utils";
 
 const GameDialog = ({ open, game, close, setGames, games }) => {
-  const [selectedDateAndTime, setSelectedDateAndTime] = useState("");
+  const dateFormat = "YYYY-MM-DD[T]HH:mm";
+
+  const [selectedDateAndTime, setSelectedDateAndTime] = useState();
   const [escapeRooms, setEscapeRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState("");
   const [message, setMessage] = useState("");
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [newGame, setNewGame] = useState("");
 
   const { currentUser } = useAuth();
 
-  const dateFormat = "YYYY-MM-DD[T]HH:mm";
+  useEffect(() => console.log(selectedDateAndTime), [selectedDateAndTime]);
 
   const loadGame = game => {
     setSelectedDateAndTime(
@@ -48,7 +52,11 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
   };
 
   const reset = () => {
-    setSelectedDateAndTime("");
+    setSelectedDateAndTime(
+      moment()
+        .add(1, "day")
+        .format(dateFormat)
+    );
     setSelectedRoom("");
     setMessage("");
   };
@@ -92,20 +100,22 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
     };
     // use loaded game id to overwrite or null for new game
     const gameRef = db.collection("games");
+
     if (game) {
       await gameRef.doc(game.id).update(gameObj);
       // update game in state
       const oldGameObj = _.find(games, ["id", game.id]);
       const newGameObj = { ...oldGameObj, ...gameObj };
-      console.log("newg", newGameObj);
       setGames(prevState =>
         prevState.map(g => (g.id === game.id ? newGameObj : g))
       );
+      setNewGame(newGameObj);
       setSnackbarMessage("Your game has been updated");
     } else {
-      await gameRef.add(gameObj);
+      const { id } = await gameRef.add(gameObj);
       // add game to state
       setGames(prevState => prevState.concat(gameObj));
+      setNewGame({ id, ...gameObj });
       setSnackbarMessage("Your game has been created.");
     }
     handleDialogClose();
@@ -162,12 +172,7 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
                     id="datetime-local"
                     label="Time and Date"
                     type="datetime-local"
-                    defaultValue={
-                      selectedDateAndTime ||
-                      moment()
-                        .add(1, "day")
-                        .format(dateFormat)
-                    }
+                    value={selectedDateAndTime}
                     fullWidth={true}
                     onChange={e => setSelectedDateAndTime(e.target.value)}
                   />
@@ -192,7 +197,13 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
         message={snackbarMessage}
         autoHideDuration={5000}
         action={
-          <Button color="secondary" size="small" onClick={handleSnackBarClose}>
+          <Button
+            component={Link}
+            to={`/games/${newGame.id}`}
+            color="secondary"
+            size="small"
+            onClick={handleSnackBarClose}
+          >
             View
           </Button>
         }

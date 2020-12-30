@@ -17,11 +17,17 @@ export default theme;
 
 export const sharedStyles = theme => ({
   paper: {
-    padding: "10px",
+    padding: theme.spacing(2),
     display: "flex",
     overflow: "auto",
     flexDirection: "column"
   },
+  // paper: {
+  //   padding: "10px",
+  //   display: "flex",
+  //   overflow: "auto",
+  //   flexDirection: "column"
+  // },
   teamGroup: {
     background: "#eee",
     padding: "20px",

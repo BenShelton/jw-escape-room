@@ -29,10 +29,12 @@ import db from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import HostBase from "./HostBase";
 import GameDialog from "./GameDialog";
+import { sharedStyles } from "../theme";
 
 const entities = new Entities();
 
 const useStyles = makeStyles(theme => ({
+  ...sharedStyles(theme),
   fab: {
     position: "fixed",
     bottom: "30px",
@@ -98,6 +100,8 @@ const DeleteGameDialog = ({ game, setGames, open, close }) => {
 };
 
 const GameList = ({ openGameDialog, games, rooms, setGames }) => {
+  const classes = useStyles();
+
   const [sortedGames, setSortedGames] = useState([]);
   const [pendingDeletion, setPendingDeletion] = useState();
 
@@ -114,8 +118,8 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
   return (
     // OPTIMIZE: add edit and delete button
     <>
-      <Title>Escape Rooms</Title>
-      <Paper>
+      <Paper className={classes.paper}>
+        <Title>Escape Rooms</Title>
         <List>
           {sortedGames.map(game => (
             <ListItem
