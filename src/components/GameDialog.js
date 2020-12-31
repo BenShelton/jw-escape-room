@@ -41,8 +41,6 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
 
   const { currentUser } = useAuth();
 
-  useEffect(() => console.log(selectedDateAndTime), [selectedDateAndTime]);
-
   const loadGame = game => {
     setSelectedDateAndTime(
       moment.unix(game.scheduledTime.seconds).format(dateFormat)

@@ -25,6 +25,8 @@ import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import _ from "lodash";
 
 import Title from "./Title";
@@ -42,6 +44,10 @@ const useStyles = makeStyles(theme => ({
     position: "fixed",
     bottom: "30px",
     right: "30px"
+  },
+  circularProgressContainer: {
+    display: "flex",
+    justifyContent: "center"
   }
 }));
 
@@ -145,6 +151,14 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
       <Paper className={classes.paper}>
         <Title>Escape Rooms</Title>
         <List>
+          {!sortedGames.length && (
+            <div className={classes.circularProgressContainer}>
+              <CircularProgress
+                style={{ margin: "0 auto" }}
+                color="secondary"
+              />
+            </div>
+          )}
           {sortedGames.map(game => (
             <ListItem
               key={game.id}
@@ -189,8 +203,13 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
           onClose={handleMenuClose}
         >
           {/* OPTIMIZE: add button icons */}
-          <MenuItem onClick={handleEditGame}>Edit</MenuItem>
-          <MenuItem onClick={handleDeleteGame}>Delete</MenuItem>
+          <MenuItem onClick={handleEditGame}>
+            <EditIcon fontSize="small" /> &nbsp; Edit
+          </MenuItem>
+          <MenuItem onClick={handleDeleteGame}>
+            <DeleteIcon fontSize="small" />
+            &nbsp; Delete
+          </MenuItem>
         </Menu>
       </Paper>
       <DeleteGameDialog
