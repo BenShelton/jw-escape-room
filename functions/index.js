@@ -74,10 +74,15 @@ exports.createGameLedger = functions.firestore
     });
   });
 
-// FIXME: this is does not work
-// exports.deleteGameLedger = functions.firestore
-//   .document("games/{gameId}")
-//   .onDelete((change, context) => {
-//     console.log("to delete", context.params.gameId);
-//     return functions.database.ref(`games/${context.params.gameId}`).remove();
-//   });
+/**
+ * Delete game ledger when deleted in firestore
+ */
+exports.deleteGameLedger = functions.firestore
+  .document("games/{gameId}")
+  .onDelete((change, context) => {
+    console.log("to delete", context.params.gameId);
+    return admin
+      .database()
+      .ref(`games/${context.params.gameId}`)
+      .remove();
+  });
