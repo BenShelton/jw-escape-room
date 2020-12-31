@@ -73,13 +73,13 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
     e.preventDefault();
     await enterPlayer(name);
     setEntered(true);
-    setScreen("waiting");
+    setScreen("waiting:host");
   };
 
   return (
     <div className="game__screen__enter">
       <div className="game__screen__enter__inner">
-        <form noValidate onSubmit={handleSubmit}>
+        <form className="jw" noValidate onSubmit={handleSubmit}>
           <label htmlFor="player-name-input">enter your name</label>
           <div className="game__screen__enter__input-row">
             <input
@@ -131,10 +131,6 @@ const Game = props => {
   let [team, setTeam] = useState();
 
   useEffect(() => {
-    // find player's team
-  }, [team]);
-
-  useEffect(() => {
     console.log(`Deciding screen on stage ${stage}`);
     // determine stage of local app
     switch (stage) {
@@ -164,6 +160,7 @@ const Game = props => {
   }, [stage]);
 
   const getScreen = screenToRender => {
+    // OPTIMIZE: add countdown animation screen before start https://codepen.io/nw/pen/zvQVWM
     console.log(`Rendering screen ${screenToRender}`);
     switch (screenToRender) {
       case "invite":
@@ -210,7 +207,7 @@ const Game = props => {
       className="game"
       style={{ backgroundImage: `url(${room.intro.background})` }}
     >
-      {false && (
+      {
         <video
           autoPlay
           loop
@@ -220,7 +217,7 @@ const Game = props => {
           id="js-intro-video"
           src="https://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
         ></video>
-      )}
+      }
       <div className="game__screen">{getScreen(screen)}</div>
     </main>
   );

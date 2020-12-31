@@ -26,7 +26,7 @@ function GameProvider({ children }) {
   useEffect(() => {
     const initGame = async () => {
       let gameData = await findGame(gameId);
-      await findRoom(gameData.room.id);
+      await findRoom(gameData.room);
       initRDBListeners();
       setLoading(false);
     };
@@ -74,6 +74,7 @@ function GameProvider({ children }) {
       .collection("rooms")
       .doc(slug)
       .get();
+    console.log("rooom", slug);
     if (!foundRoom.exists) {
       return setError(`Room with slug ${slug} not found in firestore`);
     }
