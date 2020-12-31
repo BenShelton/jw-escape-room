@@ -7,6 +7,10 @@ const _ = require("lodash");
 
 const CMSApi = require("./classes/CMSApi");
 
+/**
+ * Temp api endpoint that fetches and updates
+ * all Escape Rooms from Wordpress API
+ */
 exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
   let rooms = await CMSApi.getAllRooms();
   const getChallengePromises = rooms.map(Room => Room.getChallenges());
@@ -58,3 +62,22 @@ exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
     rooms: rooms.length
   });
 });
+
+/**
+ * Create game ledger in RTDB when created in firestore
+ */
+exports.createGameLedger = functions.firestore
+  .document("games/{gameId}")
+  .onCreate((change, context) => {
+    return functions.database.ref(`games/${context.params.gameId}`).add({
+      stage: "dormant"
+    });
+  });
+
+// FIXME: this is does not work
+// exports.deleteGameLedger = functions.firestore
+//   .document("games/{gameId}")
+//   .onDelete((change, context) => {
+//     console.log("to delete", context.params.gameId);
+//     return functions.database.ref(`games/${context.params.gameId}`).remove();
+//   });
