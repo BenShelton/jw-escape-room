@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
 import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -25,8 +25,9 @@ import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import _ from "lodash";
 
 import Title from "./Title";
@@ -42,12 +43,16 @@ const useStyles = makeStyles(theme => ({
   ...sharedStyles(theme),
   fab: {
     position: "fixed",
-    bottom: "30px",
-    right: "30px"
+    bottom: "45px",
+    right: "45px"
   },
   circularProgressContainer: {
     display: "flex",
     justifyContent: "center"
+  },
+  list: {
+    marginLeft: -theme.spacing(2),
+    marginRight: -theme.spacing(2)
   }
 }));
 
@@ -117,8 +122,9 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
   };
 
   const [sortedGames, setSortedGames] = useState([]);
-  const [pendingDeletion, setPendingDeletion] = useState(false);
+  const [pendingDeletion, setPendingDeletion] = useState();
   const [selectedGame, setSelectedGame] = useState(selectedGameInit);
+  const [loading, setLoading] = useState(true);
 
   const handleMenuClose = () => setSelectedGame(selectedGameInit);
 
@@ -136,8 +142,8 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
   };
 
   const handleDeleteGame = () => {
-    setPendingDeletion(true);
-    // OPTIMIZE: close simple here, but next event relies on it
+    setPendingDeletion(selectedGame.game);
+    handleMenuClose();
   };
 
   useEffect(() => {
@@ -150,15 +156,19 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
     <>
       <Paper className={classes.paper}>
         <Title>Escape Rooms</Title>
-        <List>
-          {!sortedGames.length && (
-            <div className={classes.circularProgressContainer}>
-              <CircularProgress
-                style={{ margin: "0 auto" }}
-                color="secondary"
-              />
-            </div>
-          )}
+        {!sortedGames.length && (
+          <div className={classes.circularProgressContainer}>
+            <CircularProgress color="secondary" />
+          </div>
+        )}
+        {/* OPTIMIZE: the below should be display when games have been processed but there
+          are no games */}
+        {/* {!sortedGames.length && (
+          <Typography align="center" variant="subtitle1">
+            Huh, no games? Hit that add button and schedule some fun!
+          </Typography>
+        )} */}
+        <List className={classes.list}>
           {sortedGames.map(game => (
             <ListItem
               key={game.id}
@@ -179,19 +189,6 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
                 >
                   <MoreHorizIcon />
                 </IconButton>
-                {/* <IconButton
-                  onClick={() => openGameDialog(game)}
-                  aria-label="edit"
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setPendingDeletion(game)}
-                  edge="end"
-                  aria-label="delete"
-                >
-                  <DeleteIcon />
-                </IconButton> */}
               </ListItemSecondaryAction>
             </ListItem>
           ))}
@@ -213,8 +210,8 @@ const GameList = ({ openGameDialog, games, rooms, setGames }) => {
         </Menu>
       </Paper>
       <DeleteGameDialog
-        open={pendingDeletion}
-        game={selectedGame.game}
+        open={Boolean(pendingDeletion)}
+        game={pendingDeletion}
         setGames={setGames}
         close={closeDialog}
       />

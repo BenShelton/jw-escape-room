@@ -112,7 +112,7 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
     } else {
       const { id } = await gameRef.add(gameObj);
       // add game to state
-      setGames(prevState => prevState.concat(gameObj));
+      setGames(prevState => prevState.concat({ id, ...gameObj }));
       setNewGame({ id, ...gameObj });
       setSnackbarMessage("Your game has been created.");
     }

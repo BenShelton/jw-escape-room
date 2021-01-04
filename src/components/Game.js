@@ -203,10 +203,7 @@ const Game = props => {
   };
 
   return (
-    <main
-      className="game"
-      style={{ backgroundImage: `url(${room.intro.background})` }}
-    >
+    <main className="game">
       {
         <video
           autoPlay
