@@ -9,7 +9,8 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test:api": "mocha \"classes/CMSApi.test.js\" --exit",
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "test:emulator": "firebase emulators:exec \"npm test\""
   },
   "engines": {
     "node": "12"

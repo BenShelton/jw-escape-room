@@ -40,7 +40,11 @@ describe("registerHost", () => {
       password: "adsfasdf123",
       referralCode: seededUser.referralCode
     });
-    expect(res).to.be.string();
+    expect(res).to.have.property("uid");
+    expect(res).to.have.property("email");
+    expect(res).to.have.property("firstName");
+    expect(res).to.have.property("lastName");
+    expect(res).to.have.property("referralCode");
   });
 
   it("should throw invalid referralCode ", async () => {

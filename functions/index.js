@@ -113,17 +113,18 @@ exports.registerHost = functions.https.onCall(async (data, context) => {
     password,
     displayName: `${firstName} ${lastName}`
   });
+  const hostRecord = {
+    firstName,
+    lastName,
+    email,
+    referralCode: utils.generateReferralCode()
+  };
   // create user record in firestore
-  const hostRecord = await admin
+  await admin
     .firestore()
     .collection("users")
     .doc(uid)
-    .set({
-      firstName,
-      lastName,
-      email,
-      referralCode: utils.generateReferralCode()
-    });
+    .set(hostRecord);
   // add new host to cosigner's cosignees
   const cosigner = findCosigners.docs[0];
   const existingCosignees = cosigner.data().cosigned || [];
@@ -132,5 +133,5 @@ exports.registerHost = functions.https.onCall(async (data, context) => {
     .collection("users")
     .doc(cosigner.id)
     .update({ cosigned: [...existingCosignees, uid] });
-  return uid;
+  return { uid, ...hostRecord };
 });
