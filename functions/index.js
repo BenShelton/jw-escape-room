@@ -4,7 +4,9 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 admin.firestore().settings({ ignoreUndefinedProperties: true });
 const _ = require("lodash");
+const { nanoid } = require("nanoid");
 
+const utils = require("./utils");
 const CMSApi = require("./classes/CMSApi");
 
 /**
@@ -86,3 +88,49 @@ exports.deleteGameLedger = functions.firestore
       .ref(`games/${context.params.gameId}`)
       .remove();
   });
+
+/**
+ * Register host
+ */
+exports.registerHost = functions.https.onCall(async (data, context) => {
+  const { referralCode, firstName, lastName, email, password } = data;
+  // check for cosigner
+  const findCosigners = await admin
+    .firestore()
+    .collection("users")
+    .where("referralCode", "==", referralCode)
+    .limit(1)
+    .get();
+  if (findCosigners.empty) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      `"${referralCode}" is not a valid referral code.`
+    );
+  }
+  // create user
+  const { uid } = await admin.auth().createUser({
+    email,
+    password,
+    displayName: `${firstName} ${lastName}`
+  });
+  // create user record in firestore
+  const hostRecord = await admin
+    .firestore()
+    .collection("users")
+    .doc(uid)
+    .set({
+      firstName,
+      lastName,
+      email,
+      referralCode: utils.generateReferralCode()
+    });
+  // add new host to cosigner's cosignees
+  const cosigner = findCosigners.docs[0];
+  const existingCosignees = cosigner.data().cosigned || [];
+  await admin
+    .firestore()
+    .collection("users")
+    .doc(cosigner.id)
+    .update({ cosigned: [...existingCosignees, uid] });
+  return uid;
+});

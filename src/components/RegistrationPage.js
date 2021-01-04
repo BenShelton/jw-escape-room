@@ -1,4 +1,4 @@
-import React, { useState, useRef, dangerouslySetInnerHTML } from "react";
+import React, { useState, useRef } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -46,14 +46,13 @@ const RegistrationPage = () => {
   const passwordConfirmRef = useRef();
   const referralCodeRef = useRef();
 
-  const { signup, cosignRegistration } = useAuth();
+  const { signup } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 
   const handleSubmit = async e => {
-    // OPTIMIZE: move sign up to cloud function
-    // to ensure security of referral system
+    // OPTIMIZE: implement validate.js
     e.preventDefault();
 
     if (isEmpty(firstNameRef.current.value)) {
@@ -87,11 +86,13 @@ const RegistrationPage = () => {
     try {
       setLoading(true);
       setError("");
-      await cosignRegistration(
-        referralCodeRef.current.value,
-        emailRef.current.value
-      );
-      await signup(emailRef.current.value, passwordRef.current.value);
+      await signup({
+        firstName: firstNameRef.current.value,
+        lastName: lastNameRef.current.value,
+        email: emailRef.current.value,
+        password: passwordRef.current.value,
+        referralCode: referralCodeRef.current.value
+      });
       history.push("/dashboard");
     } catch (e) {
       console.log(e);

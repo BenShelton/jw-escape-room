@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 
-import db, { auth } from "../firebase";
+import { auth, functions } from "../firebase";
 
 const AuthContext = React.createContext();
 
@@ -12,11 +12,20 @@ function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
 
-  const signup = (email, password) => {
-    return auth.createUserWithEmailAndPassword(email, password);
+  const login = (email, password) => {
+    return auth.signInWithEmailAndPassword(email, password);
   };
 
-  const login = (email, password) => {
+  /**
+   * [signup description]
+   * @param  {Object}  user User object w/
+   * firstName, lastName, email, password, referralCode
+   * @return {Promise} Login
+   */
+  const signup = async user => {
+    const { email, password } = user;
+    const registerHost = functions.httpsCallable("registerHost");
+    await registerHost(user);
     return auth.signInWithEmailAndPassword(email, password);
   };
 
@@ -26,21 +35,6 @@ function AuthProvider({ children }) {
 
   const resetPassword = email => auth.sendPasswordResetEmail(email);
 
-  const cosignRegistration = async (referralCode, email) => {
-    const findCosigners = await db
-      .collection("users")
-      .where("referralCode", "==", referralCode)
-      .limit(1)
-      .get();
-    if (findCosigners.empty) throw new Error("Invalid referral code.");
-    const cosigner = findCosigners.docs[0];
-    const initialValue = cosigner.data().cosigned || [];
-    return await db
-      .collection("users")
-      .doc(cosigner.id)
-      .update({ cosigned: [...initialValue, email] });
-  };
-
   window.jwLogout = logout;
   window.whoami = () => console.log(currentUser);
 
@@ -49,8 +43,7 @@ function AuthProvider({ children }) {
     signup,
     login,
     logout,
-    resetPassword,
-    cosignRegistration
+    resetPassword
   };
 
   useEffect(() => {
