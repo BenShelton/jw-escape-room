@@ -70,9 +70,10 @@ exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
  */
 exports.createGameLedger = functions.firestore
   .document("games/{gameId}")
-  .onCreate((change, context) => {
-    return functions.database.ref(`games/${context.params.gameId}`).add({
-      stage: "dormant"
+  .onCreate((snapshot, context) => {
+    return admin.database().ref(`games/${context.params.gameId}`).set({
+      stage: "dormant",
+      host: snapshot.data().host.id
     });
   });
 
