@@ -1,6 +1,28 @@
 {
   "rules": {
-    ".read": "now < 1609909200000",  // 2021-1-6
-    ".write": "now < 1609909200000",  // 2021-1-6
+    "games": {
+      "$game_id": {
+        ".read": "auth != null",
+        "players": {
+          "$player_id": {
+            ".write": "auth.uid == $player_id"
+          }
+        },
+        "teams": {
+          "$team_id": {
+            ".write": "auth != null"
+          }
+        },
+        "host": {
+          ".write": false
+        },
+        "startTime": {
+          ".write": "auth.uid != null && auth.uid == data.parent().child('host').val()"
+        },
+        "stage": {
+          ".write": "auth.uid != null && auth.uid == data.parent().child('host').val()"
+        }
+      }
+    }
   }
 }
