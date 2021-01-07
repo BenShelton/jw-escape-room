@@ -33,7 +33,7 @@ const TeamStatus = ({ team }) => {
   );
 };
 
-const GameManager = () => {
+const HostEscapeRoomObserver = () => {
   const { teams, players } = useGameHost();
 
   const [populatedTeams, setPopulatedTeams] = useState([]);
@@ -73,4 +73,4 @@ const GameManager = () => {
   );
 };
 
-export default GameManager;
+export default HostEscapeRoomObserver;

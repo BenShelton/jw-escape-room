@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 
 import db, { auth, rdb } from "../firebase";
 
-const GameContext = React.createContext();
+const EscapeRoomContext = React.createContext();
 
-function GameProvider({ children }) {
+function EscapeRoomProvider({ children }) {
   const [currentPlayer, setCurrentPlayer] = useState();
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
@@ -158,12 +158,12 @@ function GameProvider({ children }) {
   };
 
   return (
-    <GameContext.Provider value={value}>
+    <EscapeRoomContext.Provider value={value}>
       {error && <p>{error}</p>}
       {!loading && game && room && children}
-    </GameContext.Provider>
+    </EscapeRoomContext.Provider>
   );
 }
 
-export const useGame = () => useContext(GameContext);
-export default GameProvider;
+export const useGame = () => useContext(EscapeRoomContext);
+export default EscapeRoomProvider;

@@ -1,0 +1,2 @@
+- Protected routes
+- Cleanup firestore on user delete and vice versa

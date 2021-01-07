@@ -1,17 +1,14 @@
 import { React, useState, useEffect } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
-import { AllHtmlEntities as Entities } from "html-entities";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
-
-import { useGame } from "../contexts/GameContext";
+import { render } from "../helpers/utils";
+import { useGame } from "../contexts/EscapeRoomContext";
 // import CMSApi from "../classes/CMSApi";
-
-const entities = new Entities();
 
 const Counter = ({ days, hours, minutes, seconds, completed }) => (
   <div className="invitation__countdown">
@@ -40,7 +37,7 @@ const Invitation = ({ game, room, msg }) => (
   <div className="invitation">
     <div className="invitation__text">
       <h2>You Are Invited To</h2>
-      <h1>{room && entities.decode(room.title)}</h1>
+      <h1>{room && render(room.title)}</h1>
       <h2>Hosted by {game && game.host.name}</h2>
     </div>
 
@@ -114,13 +111,11 @@ const Waiting = ({ text, subtext }) => (
   </div>
 );
 
-const Game = props => {
+const EscapeRoom = props => {
   let {
-    teams,
     game,
     room,
     stage,
-    players,
     currentPlayer,
     enterPlayer,
     getTeams,
@@ -220,4 +215,4 @@ const Game = props => {
   );
 };
 
-export default Game;
+export default EscapeRoom;
