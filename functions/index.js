@@ -24,6 +24,7 @@ exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
     obj.id = Room.id;
     obj.slug = Room.slug;
     obj.title = Room.title;
+    obj.duration = Room.duration || 90;
     obj.intro = {
       content: Room.intro,
       background: Room.coverImage("full") || null
@@ -71,10 +72,13 @@ exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
 exports.createGameLedger = functions.firestore
   .document("games/{gameId}")
   .onCreate((snapshot, context) => {
-    return admin.database().ref(`games/${context.params.gameId}`).set({
-      stage: "dormant",
-      host: snapshot.data().host.id
-    });
+    return admin
+      .database()
+      .ref(`games/${context.params.gameId}`)
+      .set({
+        stage: "dormant",
+        host: snapshot.data().host.id
+      });
   });
 
 /**

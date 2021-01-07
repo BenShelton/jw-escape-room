@@ -108,6 +108,14 @@ class EscapeRoom {
     this.rawContent.acf.outro.background = outroImage;
   }
 
+  get duration() {
+    return this.rawContent.acf.duration;
+  }
+
+  set duration(outroImage) {
+    this.rawContent.acf.duration = outroImage;
+  }
+
   get featuredImage() {
     return this._featuredImage;
   }
