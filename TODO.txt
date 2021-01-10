@@ -1,2 +1,8 @@
 - Protected routes
 - Cleanup firestore on user delete and vice versa
+- implement lottie in winner screen
+-- https://lottiefiles.com/search?q=celebrate%20&category=animations&animations-page=2
+-- https://lottiefiles.com/7893-confetti-cannons
+-- https://lottiefiles.com/6902-exploding-ribbon-and-confetti
+-- https://lottiefiles.com/39927-unlock
+- add scroll down button in gameplay 

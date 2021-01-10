@@ -1,0 +1,175 @@
+$headerHeight: 125px
+
+.escaperoom
+  height: 100%
+  font-size: 1rem
+
+  &__header
+    display: flex
+    justify-content: space-between
+    padding: 25px
+    position: fixed
+    top: 0
+    left: 0
+    height: $headerHeight
+    width: 100%
+
+    &__meta
+      color: #fff
+
+      h1
+        font-weight: 500
+        font-size: 1.4em
+        margin-bottom: 8px
+
+      h2
+        margin-bottom: 8px
+
+  &__timer
+    color: #fff
+    text-align: center
+
+    li
+      display: inline-block
+      margin-right: 1em
+
+      &:last-child
+        margin-right: 0
+
+    &__value
+      font-weight: 700
+      font-size: 2.4em
+      margin-bottom: 8px
+
+    &__label
+      font-weight: 300
+      text-transform: lowercase
+      font-size: 0.8em
+
+  &__clue
+    padding: 25px 10px
+    background: $primaryPurple
+    border-radius: 3px
+    margin-bottom: 25px
+
+  &__challenge-container
+    padding: $headerHeight 0
+    max-width: 1000px
+    color: #fff
+    margin: 0 auto
+
+  &__challenge
+    margin: 0 25px
+
+    &__content
+      margin-bottom: 25px
+
+      p
+        margin-bottom: 25px
+        line-height: 1.5em
+        font-size: 1.1em
+
+      img
+        display: block
+        max-width: 100%
+        margin: 25px 0
+        border-radius: 3px
+
+  &__controls
+    position: fixed
+    bottom: 0
+    left: 0
+    height: 35px
+    display: flex
+    width: 100%
+    transition: height 300ms
+
+    &:hover
+      height: 50px
+
+  &__button
+    outline: none
+    border: 0
+    -webkit-appearance: none
+    cursor: pointer
+    color: #fff
+    font-size: 1em
+    text-transform: lowercase
+    transition: all 300ms
+    font-weight: bold
+
+    &__label
+      margin-right: 5px
+
+    &__label, &__icon
+      display: inline-block
+      vertical-align: middle
+
+    &:disabled
+      background-color: #999
+      color: #666
+      cursor: no-drop
+
+      &:disabled
+        background-color: #999
+
+    &--unlock
+      flex-grow: 1
+      background-color: $primaryBlue
+      color: darken($primaryBlue, 40)
+
+      &:hover
+        background-color: darken($primaryBlue, 8)
+
+    &--clue
+      width: 300px
+      max-width: 35%
+      background-color: $primaryPurple
+      color: darken($primaryPurple, 30)
+
+      &:hover
+        background-color: darken($primaryPurple, 8)
+
+  &__questions
+    color: #fff
+
+    h3
+      font-size: 1em
+      margin-bottom: 15px
+
+      &:last-child
+        margin-bottom: 0
+
+    &__row
+      margin-bottom: 25px
+
+      &:last-child
+        margin-bottom: 0
+
+      p
+        margin-top: 5px
+
+    label
+      color: #fff
+      font-size: 1.1em
+      display: block
+      margin-bottom: 10px
+
+    &__nonleader
+      padding: 15px
+      background-color: rgba(0, 0,0,0.7)
+      border-radius: 3px
+
+      ol
+        list-style: decimal
+        margin-left: 20px
+
+      li
+        font-size: 1.3em
+        color: #fff
+        font-weight: 500
+        margin-bottom: 10px
+
+@media screen and (max-width: $mobileBreakpoint2)
+  .escaperoom
+    font-size: 14px

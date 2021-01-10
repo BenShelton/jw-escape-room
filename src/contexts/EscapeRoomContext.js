@@ -16,12 +16,26 @@ function EscapeRoomProvider({ children }) {
   const [players, setPlayers] = useState({});
   const [startTime, setStartTime] = useState();
   const [leader, setLeader] = useState();
+  const [activeLeavePrompt, setActiveLeavePrompt] = useState(false);
 
   let { gameId } = useParams();
   const baseRef = `/games/${gameId}`;
 
   // Anonymously authenticate user and set name
   const checkIn = () => auth.signInAnonymously();
+  // Logout anon user
+  const checkOut = () => auth.signOut();
+  // attach logout to window
+  window.jwAnonLogout = checkOut;
+
+  useEffect(() => {
+    if (activeLeavePrompt === true) {
+      window.onbeforeunload = () => "Are you sure you want to leave this page?";
+    } else {
+      window.onbeforeunload = null;
+    }
+    console.log("leave", activeLeavePrompt);
+  }, [activeLeavePrompt]);
 
   useEffect(() => {
     const initGame = async () => {
@@ -34,6 +48,7 @@ function EscapeRoomProvider({ children }) {
     const initPlayer = async () => {
       const unsubscribe = auth.onAuthStateChanged(player => {
         if (player) {
+          setActiveLeavePrompt(true);
           return setCurrentPlayer(player);
         }
         checkIn();
@@ -43,6 +58,20 @@ function EscapeRoomProvider({ children }) {
     return initPlayer();
   }, []);
 
+  /**
+   * Set unload prompt on any stage other than dormant
+   */
+  useEffect(() => {
+    if (stage !== "dormant") {
+      setActiveLeavePrompt(true);
+    }
+  }, [stage]);
+
+  /**
+   * Get host from db with host id
+   * @param  {String}  id hostId
+   * @return {Object}  Host data
+   */
   const findHost = async id => {
     const foundHost = await db
       .collection("users")
@@ -54,6 +83,11 @@ function EscapeRoomProvider({ children }) {
     return foundHost.data();
   };
 
+  /**
+   * Find game by gameId and set in state
+   * @param  {String}  id Game id
+   * @return {Object}  Game data
+   */
   const findGame = async id => {
     const foundGame = await db
       .collection("games")
@@ -69,6 +103,11 @@ function EscapeRoomProvider({ children }) {
     return gameData;
   };
 
+  /**
+   * Find Escape Room content by slug
+   * and set in state
+   * @param  {String}  slug Room slug
+   */
   const findRoom = async slug => {
     const foundRoom = await db
       .collection("rooms")
@@ -100,20 +139,13 @@ function EscapeRoomProvider({ children }) {
       ...snapshotPlayers.val()[teamLeaderId]
     };
     setLeader(teamLeader);
-    console.log("the leader", teamLeader);
-    console.log("pid", currentPlayer.uid);
   };
 
-  const initRDBListeners = ledger => {
-    // teams listener
-    // const unsubscribeTeams = rdb
-    //   .ref(`${baseRef}/teams`)
-    //   .on("value", snapshot => setTeams(snapshot.val()));
-    // // players listener
-    // const unsubscribePlayers = rdb
-    //   .ref(`${baseRef}/players`)
-    //   .on("value", snapshot => setPlayers(snapshot.val()));
-    // startTime listener
+  /**
+   * Initialize real time database listeners
+   * @return {Object} Unsubscribe functions
+   */
+  const initRDBListeners = () => {
     const unsubscribeStartTime = rdb
       .ref(`${baseRef}/startTime`)
       .on("value", snapshot => setStartTime(snapshot.val()));
@@ -130,9 +162,12 @@ function EscapeRoomProvider({ children }) {
     };
   };
 
-  // Logout anon user
-  // const checkOut = () => auth.signOut();
-
+  /**
+   * Enter player into game ledger
+   * @param  {String}  displayName User display name
+   * FIXME: is this right, should event be
+   * unsubscribed right after call?
+   */
   const enterPlayer = async displayName => {
     await currentPlayer.updateProfile({ displayName });
     const unsubscribe = auth.onAuthStateChanged(player => {
@@ -154,6 +189,7 @@ function EscapeRoomProvider({ children }) {
     teams,
     players,
     getTeams,
+    startTime,
     leader
   };
 

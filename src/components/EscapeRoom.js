@@ -1,217 +1,120 @@
-import { React, useState, useEffect } from "react";
+import React from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import SearchIcon from "@material-ui/icons/Search";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
+import "animate.css/animate.min.css";
 
-// import "normalize.css/normalize.css";
-import "../styles/main.sass";
-import { render } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
-// import CMSApi from "../classes/CMSApi";
 
-const Counter = ({ days, hours, minutes, seconds, completed }) => (
-  <div className="invitation__countdown">
-    <ul className="invitation__countdown__wrapper">
+const Timer = ({ hours, minutes, seconds, completed }) => (
+  <ul className="escaperoom__timer">
+    {hours > 0 && (
       <li>
-        <p className="invitation__countdown__value">{zeroPad(days)}</p>
-        <p className="invitation__countdown__label">Days</p>
+        <p className="escaperoom__timer__value">{zeroPad(hours)}</p>
+        <p className="escaperoom__timer__label">Hours</p>
       </li>
-      <li>
-        <p className="invitation__countdown__value">{zeroPad(hours)}</p>
-        <p className="invitation__countdown__label">Hours</p>
-      </li>
-      <li>
-        <p className="invitation__countdown__value">{zeroPad(minutes)}</p>
-        <p className="invitation__countdown__label">Minutes</p>
-      </li>
-      <li>
-        <p className="invitation__countdown__value">{zeroPad(seconds)}</p>
-        <p className="invitation__countdown__label">Seconds</p>
-      </li>
-    </ul>
-  </div>
+    )}
+    <li>
+      <p className="escaperoom__timer__value">{zeroPad(minutes)}</p>
+      <p className="escaperoom__timer__label">Minutes</p>
+    </li>
+    <li>
+      <p className="escaperoom__timer__value">{zeroPad(seconds)}</p>
+      <p className="escaperoom__timer__label">Seconds</p>
+    </li>
+  </ul>
 );
 
-const Invitation = ({ game, room, msg }) => (
-  <div className="invitation">
-    <div className="invitation__text">
-      <h2>You Are Invited To</h2>
-      <h1>{room && render(room.title)}</h1>
-      <h2>Hosted by {game && game.host.name}</h2>
-    </div>
-
-    <div className="invitation__counter-container">
-      <p className="invitation__date">
-        {game &&
-          moment
-            .unix(game.scheduledTime.seconds)
-            .format("MMMM Do, YYYY [at] h:mm a")}
-      </p>
-      <Countdown
-        date={moment.unix(game.scheduledTime.seconds).toDate()}
-        renderer={props => <Counter {...props} />}
-      />
-    </div>
-  </div>
-);
-
-const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
-  const [name, setName] = useState("");
-  const [error, setError] = useState();
-
-  useEffect(() => {
-    if (currentPlayer.displayName) {
-      setName(currentPlayer.displayName);
-    }
-  }, []);
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    await enterPlayer(name);
-    setEntered(true);
-    setScreen("waiting:host");
-  };
-
+const EscapeRoom = () => {
   return (
-    <div className="game__screen__enter">
-      <div className="game__screen__enter__inner">
-        <form className="jw" noValidate onSubmit={handleSubmit}>
-          <label htmlFor="player-name-input">enter your name</label>
-          <div className="game__screen__enter__input-row">
-            <input
-              value={name}
-              onChange={e => setName(e.target.value)}
-              id="player-name-input"
-              name="player-name"
-              type="text"
+    <div className="escaperoom">
+      <header className="escaperoom__header">
+        <div className="escaperoom__header__meta">
+          <h1>Julian</h1>
+          <h2>The Escape to Noah's Ark</h2>
+          <h3>1 / 8</h3>
+        </div>
+        <div className="escaperoom__header__timer">
+          <Countdown
+            date={moment()
+              .add(60.1, "minutes")
+              // .add(45, "minutes")
+              .toDate()}
+            renderer={props => <Timer {...props} />}
+            overtime={true}
+          />
+        </div>
+      </header>
+
+      <div className="escaperoom__challenge-container">
+        <div className="escaperoom__challenge">
+          <article className="escaperoom__challenge__content">
+            <p>
+              It is 7am on Friday and about 30 minutes ago we received a text
+              message from Brother Smith, our group overseer. He asked us to
+              prepare a presentation based on a video from our Teaching Toolbox.
+              He also said it is very important to meet for field service on
+              Saturday morning because he is giving an announcement. He sent a
+              picture of the video we should prepare with. From the excitement,
+              I don’t remember which video. What is the video?
+            </p>
+            <img
+              src="https://jwer.brotherapp.org/wp-content/uploads/2020/12/kit.jpeg"
+              alt="Brother reading scripture to interested one in service."
             />
-            <button
-              className={`submit ${name.length ? "submit--show" : ""}`}
-              type="submit"
-            >
-              <ChevronRightIcon style={{ color: "#00dbff" }} />
-            </button>
+          </article>
+
+          {true && (
+            <p className="escaperoom__clue animate__animated animate__backInDown">
+              Look in the book of Revelations.
+            </p>
+          )}
+
+          <div id="escaperoom-questions" className="escaperoom__questions">
+            <form className="jw">
+              <div className="escaperoom__questions__row">
+                <label>What is the name of this video?</label>
+                <input type="text" className="full-width" />
+                <p>Please use all caps and no spaces.</p>
+              </div>
+              <div className="escaperoom__questions__row">
+                <label>What is the name of this video?</label>
+                <input
+                  type="text"
+                  className="animate__animated animate__rubberBand error full-width"
+                />
+              </div>
+            </form>
+            {false && (
+              <div className="escaperoom__questions__nonleader">
+                <h3>Help your team answer the following questions:</h3>
+                <ol>
+                  <li>What is the name of this video?</li>
+                  <li>
+                    Which is the title of the video in your teaching toolbox?
+                  </li>
+                </ol>
+              </div>
+            )}
           </div>
-        </form>
+        </div>
+      </div>
+
+      <div className="escaperoom__controls">
+        <button
+          disabled={true}
+          className="escaperoom__button escaperoom__button--clue"
+        >
+          <span className="escaperoom__button__label">Get a Clue (-2 min)</span>
+          <SearchIcon className="escaperoom__button__icon" fontSize="small" />
+        </button>
+        <button className="escaperoom__button escaperoom__button--unlock">
+          <span className="escaperoom__button__label">Unlock</span>
+          <LockOpenIcon className="escaperoom__button__icon" fontSize="small" />
+        </button>
       </div>
     </div>
-  );
-};
-
-const Waiting = ({ text, subtext }) => (
-  <div className="game__screen__waiting">
-    <div className="game__screen__waiting__inner">
-      <p className="game__screen__waiting__heading">
-        {text || "waiting for host"}
-      </p>
-      {subtext && <p className="game__screen__waiting__subtext">{subtext}</p>}
-      <CircularProgress style={{ color: "#fff" }} />
-    </div>
-  </div>
-);
-
-const EscapeRoom = props => {
-  let {
-    game,
-    room,
-    stage,
-    currentPlayer,
-    enterPlayer,
-    getTeams,
-    leader
-  } = useGame();
-  let [entered, setEntered] = useState(false);
-  let [screen, setScreen] = useState("");
-  let [team, setTeam] = useState();
-
-  useEffect(() => {
-    console.log(`Deciding screen on stage ${stage}`);
-    // determine stage of local app
-    switch (stage) {
-      case "dormant":
-        if (moment().isAfter(moment.unix(game.scheduledTime.seconds))) {
-          return setScreen("enter");
-          // scheduled time has passed, ask for name
-        }
-        if (entered === true) {
-          return setScreen("waiting:host");
-        }
-        return setScreen("invite");
-      case "collecting":
-        if (entered === true) {
-          // player already chose name
-          return setScreen("waiting:host");
-        }
-        return setScreen("enter");
-      case "dividing":
-        return setScreen("waiting:teams");
-      case "ready":
-        getTeams();
-        return setScreen("waiting:startgame");
-      default:
-        return setScreen("loading");
-    }
-  }, [stage]);
-
-  const getScreen = screenToRender => {
-    // OPTIMIZE: add countdown animation screen before start https://codepen.io/nw/pen/zvQVWM
-    console.log(`Rendering screen ${screenToRender}`);
-    switch (screenToRender) {
-      case "invite":
-        return <Invitation room={room} game={game} setScreen={setScreen} />;
-      case "enter":
-        return (
-          <Enter
-            room={room}
-            game={game}
-            currentPlayer={currentPlayer}
-            enterPlayer={enterPlayer}
-            setEntered={setEntered}
-            setScreen={setScreen}
-          />
-        );
-      case "waiting:host":
-        return <Waiting />;
-      case "waiting:teams":
-        return <Waiting text="Host is dividing teams" />;
-      case "waiting:startgame":
-        return (
-          <>
-            {leader && (
-              <Waiting
-                text="Waiting on host to start game"
-                subtext={
-                  leader.id === currentPlayer.uid
-                    ? "You are team leader. Please make sure that you are able to share this screen."
-                    : console.log("no team leader")
-                }
-              />
-            )}
-          </>
-        );
-      case "loading":
-        return <Waiting text="Loading" />;
-      default:
-        return <Waiting text="Loading" />;
-    }
-  };
-
-  return (
-    <main className="game">
-      {
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="game__intro-video"
-          id="js-intro-video"
-          src="https://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
-        ></video>
-      }
-      <div className="game__screen">{getScreen(screen)}</div>
-    </main>
   );
 };
 

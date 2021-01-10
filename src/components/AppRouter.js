@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import RegistrationPage from "./RegistrationPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
-import EscapeRoom from "./EscapeRoom";
+import EscapeRoomLobby from "./EscapeRoomLobby";
 import AuthContext from "../contexts/AuthContext";
 import LoginPage from "./LoginPage";
 import PrivateRoute from "./PrivateRoute";
@@ -20,7 +20,7 @@ export const EscapeRoomRoutes = () => (
     <Route path="/" render={() => <p>You is lost brotha.</p>} exact />
     <Route path="/:gameId" exact>
       <EscapeRoomContext>
-        <EscapeRoom />
+        <EscapeRoomLobby />
       </EscapeRoomContext>
     </Route>
   </Switch>
