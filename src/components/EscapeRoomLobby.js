@@ -39,7 +39,9 @@ const Invitation = ({ game, room, msg }) => (
     <div className="invitation__text">
       <h2>You Are Invited To</h2>
       <h1>{room && render(room.title)}</h1>
-      <h2>Hosted by {game && game.host.name}</h2>
+      <h2>
+        Hosted by {game && `${game.host.firstName} ${game.host.lastName}`}
+      </h2>
     </div>
 
     <div className="invitation__counter-container">
@@ -62,10 +64,10 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   const [error, setError] = useState();
 
   useEffect(() => {
-    if (currentPlayer.displayName) {
+    if (currentPlayer && currentPlayer.displayName) {
       setName(currentPlayer.displayName);
     }
-  }, []);
+  }, [currentPlayer]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -156,7 +158,6 @@ const EscapeRoomLobby = props => {
       case "dividing":
         return setScreen("waiting:teams");
       case "ready":
-        getTeams();
         return setScreen("waiting:startgame");
       case "playing":
         return setScreen("play");
