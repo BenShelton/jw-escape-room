@@ -1,22 +1,35 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
 import SearchIcon from "@material-ui/icons/Search";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import "animate.css/animate.min.css";
 
+import { render } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 
 const Timer = ({ hours, minutes, seconds, completed }) => (
-  <ul className="escaperoom__timer">
+  <ul
+    className={`escaperoom__timer ${
+      completed
+        ? "escaperoom__timer--completed animate__animated animate__heartBeat"
+        : ""
+    }`}
+  >
     {hours > 0 && (
       <li>
-        <p className="escaperoom__timer__value">{zeroPad(hours)}</p>
+        <p className="escaperoom__timer__value">
+          {completed && "-"}
+          {zeroPad(hours)}
+        </p>
         <p className="escaperoom__timer__label">Hours</p>
       </li>
     )}
     <li>
-      <p className="escaperoom__timer__value">{zeroPad(minutes)}</p>
+      <p className="escaperoom__timer__value">
+        {completed && !hours && "-"}
+        {zeroPad(minutes)}
+      </p>
       <p className="escaperoom__timer__label">Minutes</p>
     </li>
     <li>
@@ -27,92 +40,195 @@ const Timer = ({ hours, minutes, seconds, completed }) => (
 );
 
 const EscapeRoom = () => {
+  const {
+    room,
+    currentPlayer,
+    startTime,
+    leader,
+    checkAnswers,
+    playingChallenge,
+    nextChallenge,
+    setClue,
+    usedClues
+  } = useGame();
+
+  const [loadingChallenge, setLoadingChallenge] = useState(true);
+  const [challenge, setChallenge] = useState(null);
+  const [endTime, setEndTime] = useState();
+
+  useEffect(() => {
+    // calculate end time with start time and clues
+    const twoMinuteDeductions = usedClues.length * 120; // 120 seconds for 2 minutes each clue
+    const calculatedEndTime =
+      startTime + room.duration * 60 - twoMinuteDeductions;
+    console.log("Calulated end time", calculatedEndTime);
+    setEndTime(calculatedEndTime);
+  }, [usedClues]);
+
+  useEffect(() => {
+    if (!playingChallenge) return;
+    switch (playingChallenge) {
+      case "intro":
+        setChallenge(room.intro);
+        break;
+      case "outro":
+        setChallenge(room.outro);
+        break;
+      default:
+        setChallenge(room.challenges[playingChallenge]);
+    }
+    setLoadingChallenge(false);
+  }, [playingChallenge]);
+
+  const inputName = index => `index-${index}`;
+
+  const addError = inputEl => {
+    inputEl.classList.add("error");
+    inputEl.classList.add("animate__animated");
+    inputEl.classList.add("animate__shakeX");
+  };
+
+  const removeError = inputEl => {
+    inputEl.classList.remove("error");
+    inputEl.classList.remove("animate__animated");
+    inputEl.classList.remove("animate__shakeX");
+  };
+
+  const handleClue = async e => {
+    await setClue();
+  };
+
+  // FIXME: this is pretty much the only barrier and check
+  // for the correct answers, this should be made less obvious
+  // and utlize md5 hash
+  const handleSubmit = e => {
+    e.preventDefault();
+    // no need to check
+    if (playingChallenge === "intro" || playingChallenge === "outro") {
+      setLoadingChallenge(true);
+      return nextChallenge();
+    }
+    // get submissions and clear errors
+    const submissions = [];
+    for (let i = 0; i < challenge.questions.length; i++) {
+      const input = e.target[inputName(i)];
+      submissions.push(input.value);
+      removeError(input);
+    }
+    const wrongAnswers = checkAnswers(submissions);
+    if (wrongAnswers.length) {
+      return wrongAnswers.forEach(index => {
+        setTimeout(() => addError(e.target[inputName(index)]), 0);
+      });
+    }
+    setLoadingChallenge(true);
+    nextChallenge();
+  };
+
   return (
     <div className="escaperoom">
       <header className="escaperoom__header">
         <div className="escaperoom__header__meta">
-          <h1>Julian</h1>
-          <h2>The Escape to Noah's Ark</h2>
-          <h3>1 / 8</h3>
+          <h1>{currentPlayer.displayName}</h1>
+          <h2>{render(room.title)}</h2>
+          <h3>
+            {room.challengeMap.indexOf(playingChallenge) + 1} /{" "}
+            {room.challengeMap.length}
+          </h3>
         </div>
         <div className="escaperoom__header__timer">
-          <Countdown
-            date={moment()
-              .add(60.1, "minutes")
-              // .add(45, "minutes")
-              .toDate()}
-            renderer={props => <Timer {...props} />}
-            overtime={true}
-          />
+          {endTime && (
+            <Countdown
+              date={moment.unix(endTime).toDate()}
+              renderer={props => <Timer {...props} />}
+              overtime={true}
+            />
+          )}
         </div>
       </header>
 
       <div className="escaperoom__challenge-container">
-        <div className="escaperoom__challenge">
-          <article className="escaperoom__challenge__content">
-            <p>
-              It is 7am on Friday and about 30 minutes ago we received a text
-              message from Brother Smith, our group overseer. He asked us to
-              prepare a presentation based on a video from our Teaching Toolbox.
-              He also said it is very important to meet for field service on
-              Saturday morning because he is giving an announcement. He sent a
-              picture of the video we should prepare with. From the excitement,
-              I don’t remember which video. What is the video?
-            </p>
-            <img
-              src="https://jwer.brotherapp.org/wp-content/uploads/2020/12/kit.jpeg"
-              alt="Brother reading scripture to interested one in service."
-            />
-          </article>
+        {!loadingChallenge && (
+          <div className="escaperoom__challenge">
+            <article
+              className="escaperoom__challenge__content"
+              dangerouslySetInnerHTML={{ __html: challenge.content }}
+            ></article>
 
-          {true && (
-            <p className="escaperoom__clue animate__animated animate__backInDown">
-              Look in the book of Revelations.
-            </p>
-          )}
-
-          <div id="escaperoom-questions" className="escaperoom__questions">
-            <form className="jw">
-              <div className="escaperoom__questions__row">
-                <label>What is the name of this video?</label>
-                <input type="text" className="full-width" />
-                <p>Please use all caps and no spaces.</p>
-              </div>
-              <div className="escaperoom__questions__row">
-                <label>What is the name of this video?</label>
-                <input
-                  type="text"
-                  className="animate__animated animate__rubberBand error full-width"
-                />
-              </div>
-            </form>
-            {false && (
-              <div className="escaperoom__questions__nonleader">
-                <h3>Help your team answer the following questions:</h3>
-                <ol>
-                  <li>What is the name of this video?</li>
-                  <li>
-                    Which is the title of the video in your teaching toolbox?
-                  </li>
-                </ol>
-              </div>
+            {usedClues.includes(playingChallenge) && (
+              <p
+                className="escaperoom__clue animate__animated animate__backInDown"
+                dangerouslySetInnerHTML={{ __html: challenge.clue }}
+              ></p>
             )}
-          </div>
-        </div>
-      </div>
 
-      <div className="escaperoom__controls">
-        <button
-          disabled={true}
-          className="escaperoom__button escaperoom__button--clue"
-        >
-          <span className="escaperoom__button__label">Get a Clue (-2 min)</span>
-          <SearchIcon className="escaperoom__button__icon" fontSize="small" />
-        </button>
-        <button className="escaperoom__button escaperoom__button--unlock">
-          <span className="escaperoom__button__label">Unlock</span>
-          <LockOpenIcon className="escaperoom__button__icon" fontSize="small" />
-        </button>
+            <div id="escaperoom-questions" className="escaperoom__questions">
+              {leader.id === currentPlayer.uid && (
+                <form className="jw" onSubmit={handleSubmit}>
+                  {challenge.questions &&
+                    challenge.questions.map(({ question, hint }, index) => (
+                      <div key={index} className="escaperoom__questions__row">
+                        <label>{question}</label>
+                        <input
+                          name={inputName(index)}
+                          type="text"
+                          className="full-width"
+                        />
+                        <p dangerouslySetInnerHTML={{ __html: hint }}></p>
+                      </div>
+                    ))}
+                  <div className="escaperoom__controls">
+                    {typeof playingChallenge === "number" && (
+                      <button
+                        type="button"
+                        onClick={handleClue}
+                        disabled={
+                          usedClues.includes(playingChallenge) &&
+                          challenge.clue !== ""
+                        }
+                        className="escaperoom__button escaperoom__button--clue"
+                      >
+                        <span className="escaperoom__button__label">
+                          Get a Clue (-2 min)
+                        </span>
+                        <SearchIcon
+                          className="escaperoom__button__icon"
+                          fontSize="small"
+                        />
+                      </button>
+                    )}
+                    <button
+                      type="submit"
+                      className="escaperoom__button escaperoom__button--unlock"
+                    >
+                      <span className="escaperoom__button__label">
+                        {typeof playingChallenge === "number"
+                          ? "Unlock"
+                          : "Next"}
+                      </span>
+                      {typeof playingChallenge === "number" && (
+                        <LockOpenIcon
+                          className="escaperoom__button__icon"
+                          fontSize="small"
+                        />
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+              {leader.id !== currentPlayer.uid && challenge.questions && (
+                <div className="escaperoom__questions__nonleader">
+                  <h3>Help your team answer the following questions:</h3>
+                  <ol>
+                    {challenge.questions.map(({ question }) => (
+                      <li>{question}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

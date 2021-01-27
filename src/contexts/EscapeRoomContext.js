@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import _ from "lodash";
 
 import db, { auth, rdb } from "../firebase";
-import { useDidUpdateEffect } from "../components/CustomHooks";
 
 const EscapeRoomContext = React.createContext();
 
@@ -22,6 +21,10 @@ function EscapeRoomProvider({ children }) {
   const [activeLeavePrompt, setActiveLeavePrompt] = useState(false);
   // const [completedStages, setCompletedStages] = useState([]);
   const [pendingStage, setPendingStage] = useState();
+  // challenge state
+  const [remainingChallenges, setRemainingChallenges] = useState([]);
+  const [playingChallenge, setPlayingChallenge] = useState();
+  const [usedClues, setUsedClues] = useState([]);
 
   const stages = [
     "dormant",
@@ -38,7 +41,7 @@ function EscapeRoomProvider({ children }) {
       collecting: collectingTasks,
       dividing: dividingTasks,
       ready: readyTasks,
-      playing: () => console.log('Running "playingTasks"')
+      playing: playingTasks
     }[stage]);
 
   // OPTIMIZE: this could be written better
@@ -63,6 +66,7 @@ function EscapeRoomProvider({ children }) {
       const task = mapStageToTask(stage);
       console.log("The task at hand", task);
       await task();
+      console.log("Task finished");
       // switch (stage) {
       //   case "dormant":
       //     await dormantTasks();
@@ -127,23 +131,18 @@ function EscapeRoomProvider({ children }) {
       });
     });
 
-  const listenToStartTime = () =>
-    rdb.ref(`${baseRef}/startTime`).on("value", snapshot => {
-      setStartTime(snapshot.val());
-    });
-
   const listenToCurrentTeam = teamId =>
     new Promise((resolve, reject) => {
       rdb.ref(`${baseRef}/teams/${teamId}`).on("value", snapshot => {
-        setCurrentTeam(snapshot.val());
-        resolve(snapshot.val());
+        setCurrentTeam({ ...snapshot.val(), id: teamId });
+        resolve({ ...snapshot.val(), id: teamId });
       });
     });
 
   const dormantTasks = async function(baton) {
     console.log('Running "dormant" tasks');
     const gameData = await findGame(gameId);
-    const roomData = await findRoom(gameData.room);
+    await findRoom(gameData.room);
     // baton.room = roomData;
     // baton.game = gameData;
   };
@@ -201,8 +200,20 @@ function EscapeRoomProvider({ children }) {
     // };
     // set listener on team
     await listenToCurrentTeam(teamId);
-    // set listener to start time
-    listenToStartTime();
+  };
+
+  const playingTasks = async () => {
+    console.log(`Running "playingTasks"`);
+    // clone challenges into remaining challenges
+    setRemainingChallenges(_.clone(room.challengeMap));
+    // get start time
+    await new Promise((resolve, reject) => {
+      rdb.ref(`${baseRef}/startTime`).once("value", snapshot => {
+        setStartTime(snapshot.val());
+        resolve(snapshot.val());
+      });
+    });
+    setPlayingChallenge("intro");
   };
 
   /**
@@ -278,7 +289,6 @@ function EscapeRoomProvider({ children }) {
       .collection("rooms")
       .doc(slug)
       .get();
-    console.log("rooom", slug);
     if (!foundRoom.exists) {
       return setError(`Room with slug ${slug} not found in firestore`);
     }
@@ -293,7 +303,7 @@ function EscapeRoomProvider({ children }) {
    * simply added to ledger and not to auth object
    */
   const enterPlayer = async displayName => {
-    // // await currentPlayer.updateProfile({ displayName });
+    await currentPlayer.updateProfile({ displayName });
     // setCurrentPlayer(prevState => ({ ...prevState, displayName }));
     // // enter user into ledger
     // await rdb.ref(`${baseRef}/players/${currentPlayer.uid}`).set({
@@ -310,6 +320,65 @@ function EscapeRoomProvider({ children }) {
     unsubscribe();
   };
 
+  const nextChallenge = async () => {
+    if (!remainingChallenges.length) {
+      return rdb
+        .ref(`${baseRef}/teams/${currentTeam.id}/currentChallenge`)
+        .set("outro");
+    }
+    return rdb
+      .ref(`${baseRef}/teams/${currentTeam.id}/currentChallenge`)
+      .set(remainingChallenges[0]);
+  };
+
+  const checkAnswers = submissions => {
+    console.log("Submissions", submissions);
+    const answers = _.map(
+      room.challenges[playingChallenge].questions,
+      "answer"
+    );
+    console.log("Answers", answers);
+    const wrong = [];
+    answers.forEach((answer, i) =>
+      submissions[i] !== answer ? wrong.push(i) : null
+    );
+    return wrong;
+  };
+
+  const setClue = async () => {
+    // enter challenge id into team ledger
+    await rdb
+      .ref(`${baseRef}/teams/${currentTeam.id}/usedClues`)
+      .once("value")
+      .then(snapshot => {
+        return rdb
+          .ref(`${baseRef}/teams/${currentTeam.id}/usedClues`)
+          .set(
+            _.uniq([
+              ...(snapshot.exists() ? snapshot.val() : []),
+              playingChallenge
+            ])
+          );
+      });
+  };
+
+  // listen to team's current challenge
+  useEffect(() => {
+    if (currentTeam && currentTeam.currentChallenge) {
+      // remove from remaining challenges
+      setRemainingChallenges(prevState =>
+        prevState.filter(c => c !== currentTeam.currentChallenge)
+      );
+      setPlayingChallenge(currentTeam.currentChallenge);
+      console.log(
+        `Setting playingChallenge to ${currentTeam.currentChallenge}`
+      );
+    }
+    if (currentTeam && currentTeam.usedClues) {
+      setUsedClues(currentTeam.usedClues);
+    }
+  }, [currentTeam]);
+
   const value = {
     currentPlayer,
     game,
@@ -319,7 +388,14 @@ function EscapeRoomProvider({ children }) {
     teams,
     players,
     startTime,
-    leader
+    leader,
+    currentTeam,
+    remainingChallenges,
+    playingChallenge,
+    nextChallenge,
+    checkAnswers,
+    setClue,
+    usedClues
   };
 
   return (

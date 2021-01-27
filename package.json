@@ -42,7 +42,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:helpers": "mocha src/tests/**/*.test.js --exit"
+    "test:mocha": "mocha src/tests/**/*.test.js --exit"
   },
   "eslintConfig": {
     "extends": [

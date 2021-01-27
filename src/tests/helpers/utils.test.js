@@ -56,4 +56,19 @@ describe("Utils", () => {
       expect(subdomain).to.equal("escaperoom");
     });
   });
+
+  describe("utils/isVideo", () => {
+    it("should be true for mp4", () => {
+      const result = utils.isVideo(
+        "https://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
+      );
+      expect(result).to.be.true;
+    });
+    it("should not true for mp4", () => {
+      const result = utils.isVideo(
+        "https://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.jpeg"
+      );
+      expect(result).to.be.false;
+    });
+  });
 });

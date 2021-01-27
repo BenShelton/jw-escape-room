@@ -8,15 +8,34 @@ html, body, .full-height
   font-family: 'Roboto', sans-serif
   font-size: 16px
 
+body
+  display: flex
+  flex-direction: column
+
 #root
-  height: 100%
+  // height: 100%
+  flex-grow: 1
 
 .game
   height: 100%
-  // background-position: center center
+  background-position: center center
   background-repeat: no-repeat
   background-size: cover
   background-attachment: fixed
+
+  &::after
+    content: ''
+    background-color: rgba(0,0,0,0.5)
+    height: 100%
+    width: 100%
+    position: fixed
+    top: 0
+    left: 0
+    opacity: 0
+    transition: opacity 800ms
+
+  &--in-play::after
+    opacity: 1
 
   &__overlay
     position: fixed

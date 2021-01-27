@@ -13,4 +13,7 @@ export const getSubdomain = (location, dev) => {
   return subdomain;
 };
 
+export const isVideo = (fileName = "") =>
+  ["mp4", "MOV", "mov"].includes(fileName.match(/[^\\]*\.(\w+)$/)[1]);
+
 export const render = html => entities.decode(html);

@@ -6,7 +6,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
-import { render } from "../helpers/utils";
+import { render, isVideo } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 import EscapeRoom from "./EscapeRoom";
 import EscapeRoomShowcase from "./EscapeRoomShowcase";
@@ -217,10 +217,10 @@ const EscapeRoomLobby = props => {
 
   return (
     <main
-      className="game"
-      style={{ backgroundImage: `url(${room.intro.background})` }}
+      className={`game ${stage !== "dormant" ? "game--in-play" : ""}`}
+      style={room && { backgroundImage: `url(${room.intro.background})` }}
     >
-      {false && (
+      {room && room.outro.background.type === "video" && (
         <video
           autoPlay
           loop
@@ -228,7 +228,7 @@ const EscapeRoomLobby = props => {
           playsInline
           className="game__intro-video"
           id="js-intro-video"
-          src="https://jwer.brotherapp.org/wp-content/uploads/2020/12/Storm-16160.mp4"
+          src={room.outro.background.url}
         ></video>
       )}
       <div className="game__screen">{getScreen(screen)}</div>

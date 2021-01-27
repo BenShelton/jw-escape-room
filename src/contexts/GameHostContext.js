@@ -8,7 +8,7 @@ const GameHostContext = React.createContext();
 const GameHostProvider = ({ children }) => {
   const [game, setGame] = useState();
   const [error, setError] = useState();
-  // const [room, setRoom] = useState();
+  const [room, setRoom] = useState();
   const [players, setPlayers] = useState({});
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
@@ -72,26 +72,53 @@ const GameHostProvider = ({ children }) => {
       return setError(`Game with id ${gameId} not found.`);
     }
     setGame({ ...foundGame.data(), id: foundGame.id });
-    // find ledger or create it
-    let ledger = await rdb.ref(baseRef).once("value");
-    if (!ledger.exists()) {
-      ledger = await rdb.ref(baseRef).set({
-        stage: "dormant",
-        players: {},
-        teams: {},
-        startTime: null
-      });
-    }
+    // // find ledger or create it
+    // let ledger = await rdb.ref(baseRef).once("value");
+    // if (!ledger.exists()) {
+    //   ledger = await rdb.ref(baseRef).set({
+    //     stage: "dormant",
+    //     players: {},
+    //     teams: {},
+    //     startTime: null
+    //   });
+    // }
+    // find room
+    await findRoom(foundGame.data().room);
     await initPlayerListeners();
     initStageListener();
     initTeamListener();
     setLoading(false);
   };
 
-  const startGame = () => {
+  const findRoom = async roomId => {
+    const foundRoom = await db
+      .collection("rooms")
+      .doc(roomId)
+      .get();
+    if (!foundRoom.exists) {
+      return setError(`Room with id ${roomId} not found.`);
+    }
+    setRoom(foundRoom.data());
+    return foundRoom.data();
+  };
+
+  const resetTeamChallenges = async () => {
+    // set each team's current challenge to the first one
+    const teamIds = Object.keys(teams);
+    const updates = {};
+    teamIds.forEach(
+      id => (updates[`${baseRef}/teams/${id}/currentChallenge`] = "intro")
+    );
+    await rdb.ref().update(updates);
+  };
+
+  const startGame = async () => {
     setStage("playing");
     // set start time
-    startTimeRef.set(moment().unix());
+    await Promise.all([
+      startTimeRef.set(moment().unix()),
+      resetTeamChallenges()
+    ]);
     console.log("GAME STARTED!");
   };
 
