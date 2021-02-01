@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 
+import NamePicker from "../classes/NamePicker";
 import db, { rdb } from "../firebase";
 const GameHostContext = React.createContext();
 
@@ -126,13 +127,15 @@ const GameHostProvider = ({ children }) => {
     const updates = {};
     const teamObj = {};
     const teamIds = Object.keys(dividedTeams);
+    const Names = new NamePicker({ prefix: "The" });
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i];
       const team = dividedTeams[teamId];
+      teamObj[teamId] = { name: Names.getRandom() };
       team.forEach(player => {
         updates[`${baseRef}/players/${player.id}/team`] = teamId;
         if (player.leader === true) {
-          teamObj[teamId] = { leader: player.id };
+          teamObj[teamId].leader = player.id;
         }
       });
     }

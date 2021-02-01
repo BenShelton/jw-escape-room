@@ -108,7 +108,12 @@ const Waiting = ({ text, subtext }) => (
       <p className="game__screen__waiting__heading">
         {text || "waiting for host"}
       </p>
-      {subtext && <p className="game__screen__waiting__subtext">{subtext}</p>}
+      {subtext && (
+        <p
+          className="game__screen__waiting__subtext"
+          dangerouslySetInnerHTML={{ __html: subtext }}
+        ></p>
+      )}
       <CircularProgress style={{ color: "#fff" }} />
     </div>
   </div>
@@ -122,6 +127,7 @@ const EscapeRoomLobby = props => {
     currentPlayer,
     enterPlayer,
     getTeams,
+    currentTeam,
     leader
   } = useGame();
   let [entered, setEntered] = useState(false);
@@ -197,8 +203,8 @@ const EscapeRoomLobby = props => {
                 text="Waiting on host to start game"
                 subtext={
                   leader.id === currentPlayer.uid
-                    ? "You are team leader. Please make sure that you are able to share this screen."
-                    : console.log("no team leader")
+                    ? `You are the team leader of <strong>${currentTeam.name}</strong>. Please make sure that you are able to share this screen.`
+                    : `You are on <strong>${currentTeam.name}</strong> and <strong>${leader.name}</strong> is your team leader.`
                 }
               />
             )}

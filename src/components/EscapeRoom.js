@@ -49,7 +49,8 @@ const EscapeRoom = () => {
     playingChallenge,
     nextChallenge,
     setClue,
-    usedClues
+    usedClues,
+    currentTeam
   } = useGame();
 
   const [loadingChallenge, setLoadingChallenge] = useState(true);
@@ -129,7 +130,7 @@ const EscapeRoom = () => {
     <div className="escaperoom">
       <header className="escaperoom__header">
         <div className="escaperoom__header__meta">
-          <h1>{currentPlayer.displayName}</h1>
+          <h1>{currentTeam.name}</h1>
           <h2>{render(room.title)}</h2>
           <h3>
             {room.challengeMap.indexOf(playingChallenge) + 1} /{" "}
@@ -218,7 +219,10 @@ const EscapeRoom = () => {
               )}
               {leader.id !== currentPlayer.uid && challenge.questions && (
                 <div className="escaperoom__questions__nonleader">
-                  <h3>Help your team answer the following questions:</h3>
+                  <h3>
+                    Help your team answer the following question
+                    {challenge.questions.length > 1 && "s"}:
+                  </h3>
                   <ol>
                     {challenge.questions.map(({ question }) => (
                       <li>{question}</li>
