@@ -13,6 +13,7 @@ import HostDashboard from "./HostDashboard";
 import HostGames from "./HostGames";
 import HostOfficiate from "./HostOfficiate";
 import HostAccount from "./HostAccount";
+import ShowcasePage from "./ShowcasePage";
 import { getSubdomain } from "../helpers/utils";
 
 export const EscapeRoomRoutes = () => (
@@ -30,6 +31,7 @@ const StandardRoutes = () => (
   <AuthContext>
     <Switch>
       <Route path="/" component={LoginPage} exact />
+      <Route path="/showcase" component={ShowcasePage} exact />
       <Route path="/register" component={RegistrationPage} exact />
       <Route path="/forgot-password" component={ForgotPasswordPage} exact />
       <PrivateRoute path="/dashboard" component={HostDashboard} exact />
@@ -53,6 +55,7 @@ const AppRouter = () => {
     <Router>
       {subdomain === "escaperoom" && <Route component={EscapeRoomRoutes} />}
       {subdomain === null && <Route component={StandardRoutes} />}
+      {/* FIXME: add 404 page */}
     </Router>
   );
 };

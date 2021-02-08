@@ -1,0 +1,208 @@
+.showcase
+  $self: &
+  height: 100%
+  // display: flex
+  // justify-content: center
+  // align-items: center
+  // temp
+  background: url(https://jwer.brotherapp.org/wp-content/uploads/2020/12/kdwk-leung-1Y7Oqw-id7A-unsplash-1.jpg)
+  font-size: 18px
+  overflow: hidden
+  padding: 5em 0
+
+  &__inner
+    height: 100%
+
+  &__top-three
+    height: 100%
+    position: relative
+
+  &__winners
+    color: #fff
+    text-align: center
+    // margin-bottom: 2.5em
+    position: absolute
+    top: 50%
+    transform: translateY(-50%)
+    left: 0
+    right: 0
+    margin: auto
+    opacity: 0
+
+    &.animate__animated
+      opacity: 1
+
+    &.animate__animated.animate__zoomInDown
+      --animate-duration: 500ms
+
+    &--first
+      position: relative
+      display: table
+      margin: 0 auto
+      // transform: none
+      text-shadow: 5px 5px 8px rgba(0,0,0,0.5)
+      z-index: 3
+
+      #{ $self }__name
+        font-size: 2.2em
+        --animate-duration: 800ms
+
+    &--second
+      z-index: 2
+
+      #{ $self }__name
+        font-size: 1.8em
+
+    &--third
+      z-index: 1
+
+      #{ $self }__name
+        font-size: 1.3em
+
+  &__medal
+    position: absolute
+    top: -2em
+    right: -2em
+    width: 50%
+    transform: scale(0)
+    opacity: 0
+    transition: transform 300ms cubic-bezier(0,0,0,3), opacity 200ms
+    transition-delay: 2s
+
+    &--show
+      opacity: 1
+      transform: scale(1)
+
+  &__rank
+    font-size: 1rem
+    font-weight: 300
+    margin-bottom: 8px
+
+    sup
+      font-size: .75em
+      position: relative
+      bottom: .25em
+
+
+  &__name
+    font-weight: bold
+    margin: 0 auto .6em auto
+    padding-bottom: .4em
+    position: relative
+    display: table
+
+    &::after
+      content: ""
+      height: 1px
+      width: 65%
+      background: #fff
+      position: absolute
+      top: 100%
+      left: 0
+      right: 0
+      bottom: .4em
+      display: block
+      margin: 0 auto
+
+  &__leader, &__players-toggle
+    font-size: .8em
+
+  &__leader, &__players-toggle, &__stats
+    margin-bottom: .4em
+
+  &__players-toggle
+    @include reset-button
+    color: inherit
+    cursor: pointer
+    margin-top: 0
+
+    .MuiSvgIcon-root
+      font-size: inherit
+      position: relative
+      top: .1em
+      transition: transform 300ms
+
+    &--open .MuiSvgIcon-root
+      transform: rotate(-180deg)
+
+  &__players
+    font-size: .8em
+    font-weight: 300
+    margin: .3em 0
+    max-height: 1px
+    overflow: hidden
+    visibility: hidden
+
+    li
+      margin: .4em auto
+      display: table
+
+    &--open
+      max-height: none
+      visibility: visible
+      opacity: 1
+
+  &__current-player
+    padding: .3em .8em
+    background-color: rgba(255,255,255,0.3)
+    border-radius: 6px
+
+  &__overlay
+    position: fixed
+    top: 0
+    left: 0
+    height: 100vh
+    width: 100%
+    background-color: rgba(0,0,0,0.8)
+    opacity: 0
+    transition: opacity 6s
+
+    &--show
+      opacity: 1
+
+  &__lottie-container
+    position: fixed
+    top: 0
+    left: 0
+    height: 100vh
+    width: 100%
+
+  &__fireworks
+    position: absolute
+    bottom: 0
+    left: 0
+    right: 0
+    margin: 0 auto
+    height: 100%
+
+  &__confetti
+    position: absolute
+    width: 50%
+    max-height: 100%
+    bottom: 0
+    height: 100%
+
+    &--left
+      left: 0
+
+    &--right
+      right: 0
+
+
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
+
+  .showcase
+
+    &__fireworks
+      display: none
+
+    &__confetti
+
+      &--left
+        left: 0
+        right: 0
+        margin: 0 auto
+        width: 100%
+
+      &--right
+        display: none
