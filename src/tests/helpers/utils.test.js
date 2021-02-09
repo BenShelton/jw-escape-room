@@ -57,6 +57,12 @@ describe("Utils", () => {
       expect(subdomain).to.equal(null);
     });
 
+    it("should not get subdomain and return null in localhost:3000", () => {
+      process.env.NODE_ENV = "development";
+      const subdomain = utils.getSubdomain("localhost:3000");
+      expect(subdomain).to.equal(null);
+    });
+
     it("should get subdomain on localhost:3000", () => {
       process.env.NODE_ENV = "development";
       const subdomain = utils.getSubdomain(

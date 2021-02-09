@@ -52,7 +52,7 @@ const AppRouter = () => {
     <Router>
       {console.log("SUBDOMAIN", subdomain)}
       {subdomain === "escaperoom" && <Route component={EscapeRoomRoutes} />}
-      {subdomain !== null && <Route component={StandardRoutes} />}
+      {subdomain === null && <Route component={StandardRoutes} />}
       {/* FIXME: add 404 page */}
     </Router>
   );
