@@ -47,14 +47,12 @@ const StandardRoutes = () => (
 );
 
 const AppRouter = () => {
-  const subdomain = getSubdomain(
-    window.location.href,
-    process.env.NODE_ENV === "development"
-  );
+  const subdomain = getSubdomain(window.location.href);
   return (
     <Router>
+      {console.log("SUBDOMAIN", subdomain)}
       {subdomain === "escaperoom" && <Route component={EscapeRoomRoutes} />}
-      {subdomain === null && <Route component={StandardRoutes} />}
+      {subdomain !== null && <Route component={StandardRoutes} />}
       {/* FIXME: add 404 page */}
     </Router>
   );

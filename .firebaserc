@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "jw-escape-rooms"
+    "default": "jw-escape-rooms",
+    "staging": "jw-escape-rooms-staging"
   },
   "targets": {
     "jw-escape-rooms": {

@@ -8,7 +8,21 @@ export const getSubdomain = (location, dev) => {
   location = location.replace(/^www\./, "");
   const split = location.split(".");
   // expect 3 for production () and 2 for dev (escaperoute.localhost:3000)
-  const triggerLength = dev === true ? 2 : 3;
+  // const triggerLength = dev === true ? 2 : 3;
+  let triggerLength = null;
+  switch (process.env.NODE_ENV) {
+    case "development":
+      triggerLength = 2;
+      break;
+    case "staging":
+      triggerLength = 4;
+      break;
+    case "production":
+      triggerLength = 3;
+      break;
+    default:
+      triggerLength = 3;
+  }
   const subdomain = split.length === triggerLength ? split[0] : null;
   return subdomain;
 };

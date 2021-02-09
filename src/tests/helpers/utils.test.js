@@ -4,22 +4,27 @@ import * as utils from "../../helpers/utils";
 
 describe("Utils", () => {
   describe("utils/getSubdomain", () => {
+    afterEach(() => (process.env.NODE_ENV = null));
     it("should get subdomain w/ protocol", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain("http://escaperoom.jwzoom.games/");
       expect(subdomain).to.equal("escaperoom");
     });
 
     it("should get subdomain w/o protocol", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain("escaperoom.jwzoom.games/");
       expect(subdomain).to.equal("escaperoom");
     });
 
     it("should get subdomain w/ www", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain("www.escaperoom.jwzoom.games/");
       expect(subdomain).to.equal("escaperoom");
     });
 
     it("should get subdomain w/ www and protocol", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain(
         "http://www.escaperoom.jwzoom.games/"
       );
@@ -27,6 +32,7 @@ describe("Utils", () => {
     });
 
     it("should get subdomain w/ www and protocol https", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain(
         "https://www.escaperoom.jwzoom.games/"
       );
@@ -34,24 +40,35 @@ describe("Utils", () => {
     });
 
     it("should not subdomain and return null", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain("https://www.jwzoom.games/");
       expect(subdomain).to.equal(null);
     });
 
     it("should not subdomain and return null", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain("https://jwzoom.games/");
       expect(subdomain).to.equal(null);
     });
 
     it("should not subdomain and return null", () => {
+      process.env.NODE_ENV = "production";
       const subdomain = utils.getSubdomain("https://jwzoom.games/");
       expect(subdomain).to.equal(null);
     });
 
     it("should get subdomain on localhost:3000", () => {
+      process.env.NODE_ENV = "development";
       const subdomain = utils.getSubdomain(
-        "https://escaperoom.localhost:3000/",
-        true
+        "https://escaperoom.localhost:3000/"
+      );
+      expect(subdomain).to.equal("escaperoom");
+    });
+
+    it("should get subdomain in staging environment", () => {
+      process.env.NODE_ENV = "staging";
+      const subdomain = utils.getSubdomain(
+        "https://escaperoom.jw-escape-rooms-staging.web.app/"
       );
       expect(subdomain).to.equal("escaperoom");
     });
