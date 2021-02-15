@@ -45,8 +45,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "test:mocha": "mocha src/tests/**/*.test.js --exit",
-    "build:prod": "env-cmd -f .env.production yarn build && firebase deploy --only hosting -P default",
-    "build:staging": "env-cmd -f .env.staging yarn build && firebase deploy --only hosting -P staging"
+    "deploy:prod": "env-cmd -f .env.production yarn build && firebase deploy --only hosting -P default",
+    "deploy:staging": "env-cmd -f .env.staging yarn build && firebase deploy --only hosting -P staging"
   },
   "eslintConfig": {
     "extends": [

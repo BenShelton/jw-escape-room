@@ -10,7 +10,7 @@ export const getSubdomain = (location, dev) => {
   // expect 3 for production () and 2 for dev (escaperoute.localhost:3000)
   // const triggerLength = dev === true ? 2 : 3;
   let triggerLength = null;
-  switch (process.env.NODE_ENV) {
+  switch (process.env.REACT_APP_FB_ENV) {
     case "development":
       triggerLength = 2;
       break;
