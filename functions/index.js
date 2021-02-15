@@ -98,19 +98,23 @@ exports.deleteGameLedger = functions.firestore
  * Register host
  */
 exports.registerHost = functions.https.onCall(async (data, context) => {
+  const MASTERKEY = "GameMasterHernandez";
   const { referralCode, firstName, lastName, email, password } = data;
-  // check for cosigner
-  const findCosigners = await admin
-    .firestore()
-    .collection("users")
-    .where("referralCode", "==", referralCode)
-    .limit(1)
-    .get();
-  if (findCosigners.empty) {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      `"${referralCode}" is not a valid referral code.`
-    );
+  // allow entry for users with MASTERKEY
+  if (referralCode !== MASTERKEY) {
+    // check for cosigner
+    const findCosigners = await admin
+      .firestore()
+      .collection("users")
+      .where("referralCode", "==", referralCode)
+      .limit(1)
+      .get();
+    if (findCosigners.empty) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        `"${referralCode}" is not a valid referral code.`
+      );
+    }
   }
   // create user
   const { uid } = await admin.auth().createUser({
@@ -130,13 +134,15 @@ exports.registerHost = functions.https.onCall(async (data, context) => {
     .collection("users")
     .doc(uid)
     .set(hostRecord);
-  // add new host to cosigner's cosignees
-  const cosigner = findCosigners.docs[0];
-  const existingCosignees = cosigner.data().cosigned || [];
-  await admin
-    .firestore()
-    .collection("users")
-    .doc(cosigner.id)
-    .update({ cosigned: [...existingCosignees, uid] });
+  if (referralCode !== MASTERKEY) {
+    // add new host to cosigner's cosignees
+    const cosigner = findCosigners.docs[0];
+    const existingCosignees = cosigner.data().cosigned || [];
+    await admin
+      .firestore()
+      .collection("users")
+      .doc(cosigner.id)
+      .update({ cosigned: [...existingCosignees, uid] });
+  }
   return { uid, ...hostRecord };
 });
