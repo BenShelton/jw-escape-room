@@ -57,3 +57,24 @@ body
     z-index: 2
     position: relative
     height: 100%
+
+  &__info-toggle
+    @include reset-button
+    padding: 10px
+    position: absolute
+    top: 20px
+    right: 20px
+    cursor: pointer
+    transition: transform 500ms ease-in-out
+
+    &:hover
+      transform: scale(1.1) rotate(-12deg)
+
+    .MuiSvgIcon-root
+      fill: #fff
+
+.fade-enter
+  opacity: 0
+
+.fade-enter.fade-enter-active
+  opacity: 1

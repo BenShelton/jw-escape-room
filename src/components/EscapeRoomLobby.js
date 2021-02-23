@@ -3,9 +3,11 @@ import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
+import InfoModal from "./InfoModal";
 import { render, isVideo } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 import EscapeRoom from "./EscapeRoom";
@@ -133,6 +135,7 @@ const EscapeRoomLobby = props => {
   let [entered, setEntered] = useState(false);
   let [screen, setScreen] = useState("");
   let [team, setTeam] = useState();
+  const [openModal, setOpenModal] = useState(false);
 
   // listen here for when team completes all challenges
   // get current time and write to team
@@ -226,6 +229,14 @@ const EscapeRoomLobby = props => {
       className={`game ${stage !== "dormant" ? "game--in-play" : ""}`}
       style={room && { backgroundImage: `url(${room.intro.background})` }}
     >
+      <InfoModal
+        title="A Message From Your Host"
+        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in suscipit eros, et tincidunt leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in ipsum eget orci varius porttitor in sit amet magna. Sed nec egestas magna. Praesent posuere a libero eu dictum. Nam cursus interdum elit id dapibus."
+        meetingId="215 400 0468"
+        meetingPass="JWFUN"
+        open={openModal}
+        setOpen={setOpenModal}
+      ></InfoModal>
       {room && room.outro.background.type === "video" && (
         <video
           autoPlay
@@ -237,7 +248,17 @@ const EscapeRoomLobby = props => {
           src={room.outro.background.url}
         ></video>
       )}
-      <div className="game__screen">{getScreen(screen)}</div>
+      <div className="game__screen">
+        <button
+          className="game__info-toggle"
+          onClick={() => {
+            setOpenModal(true);
+          }}
+        >
+          <InfoOutlinedIcon />
+        </button>
+        {getScreen(screen)}
+      </div>
       <div className="game__overlay"></div>
     </main>
   );

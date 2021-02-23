@@ -5,7 +5,7 @@ const Attribution = () => {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Compliments of "}
-      <Link color="inherit" href="https://julianhernandez.me">
+      <Link color="inherit" target="_blank" href="https://brotherapp.org">
         <strong>Brother App</strong>
       </Link>
     </Typography>
