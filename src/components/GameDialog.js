@@ -36,6 +36,8 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
   const [escapeRooms, setEscapeRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState("");
   const [message, setMessage] = useState("");
+  const [meetingId, setMeetingId] = useState("");
+  const [meetingPassword, setMeetingPassword] = useState("");
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [newGame, setNewGame] = useState("");
 
@@ -94,6 +96,10 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
       ),
       message,
       room: selectedRoom,
+      meeting: {
+        id: meetingId,
+        password: meetingPassword
+      },
       host: db.doc(`users/${currentUser.uid}`)
     };
     // use loaded game id to overwrite or null for new game
@@ -151,18 +157,42 @@ const GameDialog = ({ open, game, close, setGames, games }) => {
                       </MenuItem>
                     ))}
                   </Select>
-                  <FormHelperText>Some important helper text</FormHelperText>
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   label="Message"
                   multiline
-                  rows={5}
+                  rows={3}
                   value={message}
                   onChange={e => setMessage(e.target.value)}
                   fullWidth={true}
                 />
+                <FormHelperText>
+                  This message will be displayed on the invitation when your
+                  link is created.
+                </FormHelperText>
+              </Grid>
+              <Grid item container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField
+                    label="Meeting ID"
+                    value={meetingId}
+                    onChange={e => setMeetingId(e.target.value)}
+                    fullWidth={true}
+                  />
+                  <FormHelperText>
+                    Create your Zoom meeting and add the credentials here.
+                  </FormHelperText>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    value={meetingPassword}
+                    label="Password"
+                    onChange={e => setMeetingPassword(e.target.value)}
+                    fullWidth={true}
+                  />
+                </Grid>
               </Grid>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid item xs={12}>

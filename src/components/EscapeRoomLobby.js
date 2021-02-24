@@ -230,10 +230,10 @@ const EscapeRoomLobby = props => {
       style={room && { backgroundImage: `url(${room.intro.background})` }}
     >
       <InfoModal
-        title="A Message From Your Host"
-        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in suscipit eros, et tincidunt leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in ipsum eget orci varius porttitor in sit amet magna. Sed nec egestas magna. Praesent posuere a libero eu dictum. Nam cursus interdum elit id dapibus."
-        meetingId="215 400 0468"
-        meetingPass="JWFUN"
+        title={`A message from ${game.host.firstName} ${game.host.lastName}`}
+        message={game.message}
+        meetingId={game.meeting.id}
+        meetingPass={game.meeting.password}
         open={openModal}
         setOpen={setOpenModal}
       ></InfoModal>

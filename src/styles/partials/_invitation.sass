@@ -61,8 +61,15 @@
       margin: 20px auto 0 auto
 
       &__wrapper
-        padding: 0 5px
+        padding: 0 30px
         justify-content: space-between
 
         & li
           margin-right: 0
+
+@media screen and (max-width: $mobileBreakpoint1 + 'px')
+  .invitation
+    font-size: 11px
+
+    &__countdown__value
+      font-size: 5em

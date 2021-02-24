@@ -73,8 +73,9 @@ body
     .MuiSvgIcon-root
       fill: #fff
 
-.fade-enter
-  opacity: 0
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
+  .game
 
-.fade-enter.fade-enter-active
-  opacity: 1
+    &__info-toggle
+      top: 10px
+      right: 10px
