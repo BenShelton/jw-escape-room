@@ -14,7 +14,7 @@
   &__box
     position: relative
     margin: auto
-    background-color: rgba(255,255,255,.03)
+    background-color: rgba(255,255,255,.08)
     backdrop-filter: blur(5px)
     border: 1px solid transparent
     box-shadow: 10px 10px 10px rgba(46, 54, 68, .09)
@@ -43,10 +43,13 @@
     cursor: pointer
 
     .MuiSvgIcon-root
-      vertical-align: middle
-      position: relative
-      left: -2px
-      pointer-events: none
+      position: absolute
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+      margin: auto
+      display: block
 
   &__credentials
     text-align: center
