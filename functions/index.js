@@ -74,7 +74,7 @@ exports.createGameLedger = functions.firestore
   .onCreate((snapshot, context) => {
     return admin
       .database()
-      .ref(`games/${context.params.gameId}`)
+      .ref(`er-games/${context.params.gameId}`)
       .set({
         stage: "dormant",
         host: snapshot.data().host.id
@@ -90,7 +90,7 @@ exports.deleteGameLedger = functions.firestore
     console.log("to delete", context.params.gameId);
     return admin
       .database()
-      .ref(`games/${context.params.gameId}`)
+      .ref(`er-games/${context.params.gameId}`)
       .remove();
   });
 

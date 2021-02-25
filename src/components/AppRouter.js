@@ -51,7 +51,8 @@ const AppRouter = () => {
   return (
     <Router>
       {console.log("SUBDOMAIN", subdomain)}
-      {console.log("ENV", process.env.REACT_APP_FB_ENV)}
+      {console.log('BASE_URL', process.env.REACT_APP_BASE_URL)}
+      {console.log("FB_ENV", process.env.REACT_APP_FB_ENV)}
       {subdomain === "escaperoom" && <Route component={EscapeRoomRoutes} />}
       {subdomain === null && <Route component={StandardRoutes} />}
       {/* FIXME: add 404 page */}

@@ -69,7 +69,7 @@ export const SetupStep = ({
 };
 
 const BeginGameStep = ({ ...rest }) => {
-  const { game, stage, setStage } = useGameHost();
+  const { game, stage, setStage, gameURL } = useGameHost();
 
   const nextHandler = () => {
     // change stage to collecting
@@ -87,7 +87,7 @@ const BeginGameStep = ({ ...rest }) => {
         Opening the game will allow players to enter their name and sign in.
       </Typography>
       <Typography>
-        <strong>{`https://escaperoom.jwzoom.games/${game.id}`}</strong>
+        <strong>{gameURL}</strong>
       </Typography>
     </SetupStep>
   );

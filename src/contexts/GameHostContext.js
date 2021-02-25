@@ -16,14 +16,13 @@ const GameHostProvider = ({ children }) => {
   const [stage, setStage] = useState("");
 
   const { gameId } = useParams();
+  const gameURL = `${process.env.REACT_APP_FB_ENV !== 'development' ? 'https://' : ''}escaperoom.${process.env.REACT_APP_BASE_URL}/${gameId}`;
 
-  const gameURL = `${process.env.REACT_APP_SITE_URL}/play/${gameId}`;
-
-  const baseRef = `games/${gameId}`;
-  const playersRef = rdb.ref(`${baseRef}/players`);
-  const teamsRef = rdb.ref(`${baseRef}/teams`);
-  const stageRef = rdb.ref(`${baseRef}/stage`);
-  const startTimeRef = rdb.ref(`${baseRef}/startTime`);
+  const gameRef = rdb.ref(`er-games/${gameId}`);
+  const playersRef = rdb.ref(`er-players/${gameId}`);
+  const teamsRef = rdb.ref(`er-teams/${gameId}`);
+  const stageRef = rdb.ref(`er-games/${gameId}/stage`);
+  const startTimeRef = rdb.ref(`er-games/${gameId}/startTime`);
 
   const initPlayerListeners = () => {
     const unsubscribeAdd = playersRef.on("child_added", snapshot =>
@@ -108,7 +107,7 @@ const GameHostProvider = ({ children }) => {
     const teamIds = Object.keys(teams);
     const updates = {};
     teamIds.forEach(
-      id => (updates[`${baseRef}/teams/${id}/currentChallenge`] = "intro")
+      id => (updates[`er-teams/${gameId}/${id}/currentChallenge`] = "intro")
     );
     await rdb.ref().update(updates);
   };
@@ -133,7 +132,7 @@ const GameHostProvider = ({ children }) => {
       const team = dividedTeams[teamId];
       teamObj[teamId] = { name: Names.getRandom() };
       team.forEach(player => {
-        updates[`${baseRef}/players/${player.id}/team`] = teamId;
+        updates[`er-players/${gameId}/${player.id}/team`] = teamId;
         if (player.leader === true) {
           teamObj[teamId].leader = player.id;
         }
@@ -141,7 +140,7 @@ const GameHostProvider = ({ children }) => {
     }
     await Promise.all([
       rdb.ref().update(updates),
-      rdb.ref(`${baseRef}/teams`).set(teamObj)
+      teamsRef.set(teamObj)
     ]);
   };
 
@@ -165,7 +164,6 @@ const GameHostProvider = ({ children }) => {
     stage,
     setStage,
     startGame,
-    baseRef,
     teamsRef,
     gameURL
   };

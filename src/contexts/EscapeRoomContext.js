@@ -26,6 +26,9 @@ function EscapeRoomProvider({ children }) {
   const [playingChallenge, setPlayingChallenge] = useState();
   const [usedClues, setUsedClues] = useState([]);
 
+  let { gameId } = useParams();
+  const baseRef = `/games/${gameId}`;
+
   const stages = [
     "dormant",
     "collecting",
@@ -105,7 +108,7 @@ function EscapeRoomProvider({ children }) {
     //   setLoading(false);
     // };
     // on initial render subscribe to game stage
-    rdb.ref(`${baseRef}/stage`).on("value", snapshot => {
+    rdb.ref(`er-games/${gameId}/stage`).on("value", snapshot => {
       console.log(
         "==========STAGE CHANGE==========\n",
         "Stage " + snapshot.val()
@@ -117,7 +120,7 @@ function EscapeRoomProvider({ children }) {
 
   const listenToTeams = () =>
     new Promise((resolve, reject) => {
-      rdb.ref(`${baseRef}/teams`).on("value", snapshot => {
+      rdb.ref(`er-teams/${gameId}/teams`).on("value", snapshot => {
         setTeams(snapshot.val());
         resolve(snapshot.val());
       });
@@ -125,7 +128,7 @@ function EscapeRoomProvider({ children }) {
 
   const listenToPlayers = () =>
     new Promise((resolve, reject) => {
-      rdb.ref(`${baseRef}/players`).on("value", snapshot => {
+      rdb.ref(`er-players/${gameId}`).on("value", snapshot => {
         setPlayers(snapshot.val());
         resolve(snapshot.val());
       });
@@ -133,7 +136,7 @@ function EscapeRoomProvider({ children }) {
 
   const listenToCurrentTeam = teamId =>
     new Promise((resolve, reject) => {
-      rdb.ref(`${baseRef}/teams/${teamId}`).on("value", snapshot => {
+      rdb.ref(`teams/${gameId}/${teamId}`).on("value", snapshot => {
         setCurrentTeam({ ...snapshot.val(), id: teamId });
         resolve({ ...snapshot.val(), id: teamId });
       });
@@ -224,9 +227,6 @@ function EscapeRoomProvider({ children }) {
     const leader = players[currentTeam.leader];
     setLeader({ ...leader, id: currentTeam.leader });
   }, [currentTeam]);
-
-  let { gameId } = useParams();
-  const baseRef = `/games/${gameId}`;
 
   // Anonymously authenticate user and set name
   const checkIn = () => auth.signInAnonymously();
@@ -323,11 +323,11 @@ function EscapeRoomProvider({ children }) {
   const nextChallenge = async () => {
     if (!remainingChallenges.length) {
       return rdb
-        .ref(`${baseRef}/teams/${currentTeam.id}/currentChallenge`)
+        .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
         .set("outro");
     }
     return rdb
-      .ref(`${baseRef}/teams/${currentTeam.id}/currentChallenge`)
+      .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
       .set(remainingChallenges[0]);
   };
 
@@ -348,11 +348,11 @@ function EscapeRoomProvider({ children }) {
   const setClue = async () => {
     // enter challenge id into team ledger
     await rdb
-      .ref(`${baseRef}/teams/${currentTeam.id}/usedClues`)
+      .ref(`er-teams/${gameId}/${currentTeam.id}/usedClues`)
       .once("value")
       .then(snapshot => {
         return rdb
-          .ref(`${baseRef}/teams/${currentTeam.id}/usedClues`)
+          .ref(`er-teams/${gameId}/${currentTeam.id}/usedClues`)
           .set(
             _.uniq([
               ...(snapshot.exists() ? snapshot.val() : []),
