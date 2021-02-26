@@ -87,11 +87,24 @@ exports.createGameLedger = functions.firestore
 exports.deleteGameLedger = functions.firestore
   .document("games/{gameId}")
   .onDelete((change, context) => {
-    console.log("to delete", context.params.gameId);
-    return admin
-      .database()
-      .ref(`er-games/${context.params.gameId}`)
-      .remove();
+    return Promise.all([
+      admin
+        .database()
+        .ref(`er-games/${context.params.gameId}`)
+        .remove(),
+      admin
+        .database()
+        .ref(`er-teams/${context.params.gameId}`)
+        .remove(),
+      admin
+        .database()
+        .ref(`er-players/${context.params.gameId}`)
+        .remove(),
+      admin
+        .database()
+        .ref(`er-rankings/${context.params.gameId}`)
+        .remove()
+    ]);
   });
 
 /**

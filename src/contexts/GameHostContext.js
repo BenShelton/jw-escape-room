@@ -127,7 +127,7 @@ const GameHostProvider = ({ children }) => {
 
   const resetGame = async () => {
     await Promise.all([
-      stageRef.set("dormant"),
+      gameRef.set({ host: game.host.id, stage: "dormant" }),
       teamsRef.set(null),
       playersRef.remove(null),
       rankingsRef.remove(null)
