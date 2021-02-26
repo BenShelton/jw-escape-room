@@ -171,7 +171,9 @@ const GameSetup = () => {
   const [activeStep, setActiveStep] = useState();
   const [numberOfTeams, setNumberOfTeams] = useState(1);
 
-  const { stage } = useGameHost();
+  const { stage, resetGame } = useGameHost();
+
+  const handleReset = () => resetGame();
 
   // FIXME: hardcoded and that makes me feel icky. Better way?
   const mapStageToStep = stage =>
@@ -185,16 +187,27 @@ const GameSetup = () => {
   }, [stage]);
 
   return (
-    <Block>
-      <div className={classes.root}>
-        <Stepper activeStep={activeStep} orientation="vertical">
-          <BeginGameStep />
-          <PlayerCollectStep setNumberOfTeams={setNumberOfTeams} />
-          <PickTeamStep numberOfTeams={numberOfTeams} />
-          <FinishSetupStep />
-        </Stepper>
-      </div>
-    </Block>
+    <>
+      <Button
+        variant="contained"
+        style={{ margin: "10px 0" }}
+        disabled={stage === "dormant"}
+        onClick={handleReset}
+      >
+        Reset
+      </Button>
+
+      <Block>
+        <div className={classes.root}>
+          <Stepper activeStep={activeStep} orientation="vertical">
+            <BeginGameStep />
+            <PlayerCollectStep setNumberOfTeams={setNumberOfTeams} />
+            <PickTeamStep numberOfTeams={numberOfTeams} />
+            <FinishSetupStep />
+          </Stepper>
+        </div>
+      </Block>
+    </>
   );
 };
 

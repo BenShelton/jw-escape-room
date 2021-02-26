@@ -16,13 +16,16 @@ const GameHostProvider = ({ children }) => {
   const [stage, setStage] = useState("");
 
   const { gameId } = useParams();
-  const gameURL = `${process.env.REACT_APP_FB_ENV !== 'development' ? 'https://' : ''}escaperoom.${process.env.REACT_APP_BASE_URL}/${gameId}`;
+  const gameURL = `${
+    process.env.REACT_APP_FB_ENV !== "development" ? "https://" : ""
+  }escaperoom.${process.env.REACT_APP_BASE_URL}/${gameId}`;
 
   const gameRef = rdb.ref(`er-games/${gameId}`);
   const playersRef = rdb.ref(`er-players/${gameId}`);
   const teamsRef = rdb.ref(`er-teams/${gameId}`);
   const stageRef = rdb.ref(`er-games/${gameId}/stage`);
   const startTimeRef = rdb.ref(`er-games/${gameId}/startTime`);
+  const rankingsRef = rdb.ref(`er-rankings/${gameId}`);
 
   const initPlayerListeners = () => {
     const unsubscribeAdd = playersRef.on("child_added", snapshot =>
@@ -122,6 +125,15 @@ const GameHostProvider = ({ children }) => {
     console.log("GAME STARTED!");
   };
 
+  const resetGame = async () => {
+    await Promise.all([
+      stageRef.set("dormant"),
+      teamsRef.set(null),
+      playersRef.remove(null),
+      rankingsRef.remove(null)
+    ]);
+  };
+
   const writeTeams = async dividedTeams => {
     const updates = {};
     const teamObj = {};
@@ -138,10 +150,7 @@ const GameHostProvider = ({ children }) => {
         }
       });
     }
-    await Promise.all([
-      rdb.ref().update(updates),
-      teamsRef.set(teamObj)
-    ]);
+    await Promise.all([rdb.ref().update(updates), teamsRef.set(teamObj)]);
   };
 
   useEffect(() => {
@@ -164,6 +173,7 @@ const GameHostProvider = ({ children }) => {
     stage,
     setStage,
     startGame,
+    resetGame,
     teamsRef,
     gameURL
   };
