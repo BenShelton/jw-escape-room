@@ -104,6 +104,7 @@ const EscapeRoom = () => {
   // and utlize md5 hash
   const handleSubmit = e => {
     e.preventDefault();
+    e.persist();
     // no need to check
     if (playingChallenge === "intro" || playingChallenge === "outro") {
       setLoadingChallenge(true);
