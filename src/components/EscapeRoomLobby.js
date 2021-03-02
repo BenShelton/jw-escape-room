@@ -229,14 +229,16 @@ const EscapeRoomLobby = props => {
       className={`game ${stage !== "dormant" ? "game--in-play" : ""}`}
       style={room && { backgroundImage: `url(${room.intro.background})` }}
     >
-      <InfoModal
-        title={`A message from ${game.host.firstName} ${game.host.lastName}`}
-        message={game.message}
-        meetingId={game.meeting.id}
-        meetingPass={game.meeting.password}
-        open={openModal}
-        setOpen={setOpenModal}
-      ></InfoModal>
+      {stage !== "playing" && stage !== "final" && (
+        <InfoModal
+          title={`A message from ${game.host.firstName} ${game.host.lastName}`}
+          message={game.message}
+          meetingId={game.meeting.id}
+          meetingPass={game.meeting.password}
+          open={openModal}
+          setOpen={setOpenModal}
+        ></InfoModal>
+      )}
       {room && room.outro.background.type === "video" && (
         <video
           autoPlay
