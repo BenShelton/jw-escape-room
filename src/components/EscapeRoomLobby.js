@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import ReactGA from "react-ga";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
@@ -41,10 +42,8 @@ const Invitation = ({ game, room, msg }) => (
   <div className="invitation">
     <div className="invitation__text">
       <h2>You Are Invited To</h2>
-      <h1>{room && render(room.title)}</h1>
-      <h2>
-        Hosted by {game && `${game.host.firstName} ${game.host.lastName}`}
-      </h2>
+      <h1>{render(room.title)}</h1>
+      <h2>Hosted by {`${game.host.firstName} ${game.host.lastName}`}</h2>
     </div>
 
     <div className="invitation__counter-container">
@@ -138,6 +137,15 @@ const EscapeRoomLobby = props => {
   let [team, setTeam] = useState();
   const [openModal, setOpenModal] = useState(false);
 
+  useEffect(() => {
+    // GA log room visit
+    ReactGA.event({
+      category: "Escape Room",
+      action: "Visited invitation screen",
+      label: room.title
+    });
+  }, []);
+
   // listen here for when team completes all challenges
   // get current time and write to team
   // mark completed in team ledger
@@ -228,10 +236,10 @@ const EscapeRoomLobby = props => {
   return (
     <main
       className={`game ${stage !== "dormant" ? "game--in-play" : ""}`}
-      style={room && { backgroundImage: `url(${room.intro.background})` }}
+      style={{ backgroundImage: `url(${room.intro.background})` }}
     >
       <Helmet>
-        <title>{room && `${room.title} - Virtual Escape Room`}</title>
+        <title>{`${room.title} - Virtual Escape Room`}</title>
       </Helmet>
       {stage !== "playing" && stage !== "final" && (
         <InfoModal
@@ -243,7 +251,7 @@ const EscapeRoomLobby = props => {
           setOpen={setOpenModal}
         ></InfoModal>
       )}
-      {room && room.outro.background.type === "video" && (
+      {room.outro.background.type === "video" && (
         <video
           autoPlay
           loop

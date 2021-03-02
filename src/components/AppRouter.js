@@ -50,7 +50,6 @@ const StandardRoutes = () => (
           <HostOfficiate />
         </GameHostContext>
       </PrivateRoute>
-      <AnalyticsTracker />
     </Switch>
   </AuthProvider>
 );
@@ -65,6 +64,7 @@ const AppRouter = () => {
       {subdomain === "escaperoom" && <Route component={EscapeRoomRoutes} />}
       {subdomain === null && <Route component={StandardRoutes} />}
       {/* FIXME: add 404 page */}
+      <AnalyticsTracker />
     </Router>
   );
 };
