@@ -235,7 +235,9 @@ const EscapeRoomLobby = props => {
 
   return (
     <main
-      className={`game ${stage !== "dormant" ? "game--in-play" : ""}`}
+      className={`game ${
+        stage !== "dormant" ? "game--in-play" : ""
+      } game--stage--${stage}`}
       style={{ backgroundImage: `url(${room.intro.background})` }}
     >
       <Helmet>
