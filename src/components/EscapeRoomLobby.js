@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
+import { Helmet } from "react-helmet";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -229,6 +230,9 @@ const EscapeRoomLobby = props => {
       className={`game ${stage !== "dormant" ? "game--in-play" : ""}`}
       style={room && { backgroundImage: `url(${room.intro.background})` }}
     >
+      <Helmet>
+        <title>{room && `${room.title} - Virtual Escape Room`}</title>
+      </Helmet>
       {stage !== "playing" && stage !== "final" && (
         <InfoModal
           title={`A message from ${game.host.firstName} ${game.host.lastName}`}

@@ -3,6 +3,7 @@ import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
 import SearchIcon from "@material-ui/icons/Search";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
+import { Helmet } from "react-helmet";
 import "animate.css/animate.min.css";
 
 import { render } from "../helpers/utils";
@@ -127,16 +128,21 @@ const EscapeRoom = () => {
     nextChallenge();
   };
 
+  const getChallengeTracker = () =>
+    `${room.challengeMap.indexOf(playingChallenge) + 1} / ${
+      room.challengeMap.length
+    }`;
+
   return (
     <div className="escaperoom">
+      <Helmet>
+        <title>{room && `${room.title} - ${getChallengeTracker()}`}</title>
+      </Helmet>
       <header className="escaperoom__header">
         <div className="escaperoom__header__meta">
           <h1>{currentTeam.name}</h1>
           <h2>{render(room.title)}</h2>
-          <h3>
-            {room.challengeMap.indexOf(playingChallenge) + 1} /{" "}
-            {room.challengeMap.length}
-          </h3>
+          <h3>{getChallengeTracker()}</h3>
         </div>
         <div className="escaperoom__header__timer">
           {endTime && (
