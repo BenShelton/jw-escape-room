@@ -303,20 +303,18 @@ function EscapeRoomProvider({ children }) {
    */
   const enterPlayer = async displayName => {
     await currentPlayer.updateProfile({ displayName });
-    // setCurrentPlayer(prevState => ({ ...prevState, displayName }));
-    // // enter user into ledger
-    // await rdb.ref(`${baseRef}/players/${currentPlayer.uid}`).set({
-    //   name: displayName
-    // });
-    const unsubscribe = auth.onAuthStateChanged(async player => {
-      console.log("Entering player", player);
-      setCurrentPlayer(player);
-      // enter user into ledger
-      await rdb.ref(`er-players/${gameId}/${player.uid}`).set({
-        name: player.displayName
+    const unsubscribeAuth = await new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(async player => {
+        console.log("Entering player", player);
+        setCurrentPlayer(player);
+        // enter user into ledger
+        await rdb.ref(`er-players/${gameId}/${player.uid}`).set({
+          name: player.displayName
+        });
+        resolve(unsubscribe);
       });
     });
-    unsubscribe();
+    unsubscribeAuth();
   };
 
   const nextChallenge = async () => {
