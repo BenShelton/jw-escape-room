@@ -13,12 +13,11 @@ function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [hostRecord, setHostRecord] = useState();
 
-  const login = (email, password) => {
-    return auth.signInWithEmailAndPassword(email, password);
+  const login = async (email, password) => {
+    await auth.signInWithEmailAndPassword(email, password);
   };
 
   /**
-   * [signup description]
    * @param  {Object}  user User object w/
    * firstName, lastName, email, password, referralCode
    * @return {Promise} Login
@@ -50,7 +49,6 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async user => {
-      console.log("uuuser", user);
       if (!hostRecord && user) {
         console.log(`Getting user record for ${user.uid}`);
         const record = await db

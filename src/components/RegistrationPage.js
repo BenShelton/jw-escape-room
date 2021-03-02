@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -11,6 +11,7 @@ import Grid from "@material-ui/core/Grid";
 import { useAuth } from "../contexts/AuthContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink } from "react-router-dom";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import { isEmpty } from "lodash";
 
@@ -46,7 +47,7 @@ const RegistrationPage = () => {
   const passwordConfirmRef = useRef();
   const referralCodeRef = useRef();
 
-  const { signup } = useAuth();
+  const { signup, currentUser } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
@@ -54,7 +55,7 @@ const RegistrationPage = () => {
   const handleSubmit = async e => {
     // OPTIMIZE: implement validate.js
     e.preventDefault();
-
+    setLoading(true);
     if (isEmpty(firstNameRef.current.value)) {
       return setError("Please enter your first name.");
     }
@@ -84,7 +85,6 @@ const RegistrationPage = () => {
     }
 
     try {
-      setLoading(true);
       setError("");
       await signup({
         firstName: firstNameRef.current.value,
@@ -93,14 +93,19 @@ const RegistrationPage = () => {
         password: passwordRef.current.value,
         referralCode: referralCodeRef.current.value
       });
-      history.push("/dashboard");
     } catch (e) {
-      console.log(e);
+      console.error(e);
       setError(e.message);
     }
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (currentUser && currentUser.uid) {
+      history.push("/games");
+    }
+  }, [currentUser]);
 
   return (
     <LoginBase>
@@ -203,7 +208,7 @@ const RegistrationPage = () => {
           className={classes.submit}
           disabled={loading}
         >
-          Sign Up
+          {!loading ? "Sign Up" : <CircularProgress size={24} />}
         </Button>
         <Grid container justify="flex-end">
           <Grid item>

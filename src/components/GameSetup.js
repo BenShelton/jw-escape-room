@@ -11,6 +11,7 @@ import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import { sharedStyles } from "../theme";
 import TextField from "@material-ui/core/TextField";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import Block from "./Block";
 import PickTeamStep from "./PickTeamStep";
@@ -88,6 +89,9 @@ const BeginGameStep = ({ ...rest }) => {
       </Typography>
       <Typography>
         <strong>{gameURL}</strong>
+        <CopyToClipboard text={gameURL}>
+          <button>copy</button>
+        </CopyToClipboard>
       </Typography>
     </SetupStep>
   );

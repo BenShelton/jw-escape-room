@@ -164,13 +164,6 @@ const Dashboard = ({ children }) => {
         <Divider />
         <List>
           <div>
-            <ListItem component={RouterLink} to="/dashboard" button>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-
             <ListItem component={RouterLink} to="/games" button>
               <ListItemIcon>
                 <SportsEsports />

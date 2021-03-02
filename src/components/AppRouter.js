@@ -4,12 +4,11 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import RegistrationPage from "./RegistrationPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import EscapeRoomLobby from "./EscapeRoomLobby";
-import AuthContext from "../contexts/AuthContext";
+import AuthProvider from "../contexts/AuthContext";
 import LoginPage from "./LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import EscapeRoomContext from "../contexts/EscapeRoomContext";
 import GameHostContext from "../contexts/GameHostContext";
-import HostDashboard from "./HostDashboard";
 import HostGames from "./HostGames";
 import HostOfficiate from "./HostOfficiate";
 import HostAccount from "./HostAccount";
@@ -28,13 +27,12 @@ export const EscapeRoomRoutes = () => (
 );
 
 const StandardRoutes = () => (
-  <AuthContext>
+  <AuthProvider>
     <Switch>
       <Route path="/" component={LoginPage} exact />
       <Route path="/showcase" component={ShowcasePage} exact />
       <Route path="/register" component={RegistrationPage} exact />
       <Route path="/forgot-password" component={ForgotPasswordPage} exact />
-      <PrivateRoute path="/dashboard" component={HostDashboard} exact />
       <PrivateRoute path="/account" component={HostAccount} exact />
       <PrivateRoute path="/games" component={HostGames} exact />
       <PrivateRoute path="/games/:gameId" exact>
@@ -43,7 +41,7 @@ const StandardRoutes = () => (
         </GameHostContext>
       </PrivateRoute>
     </Switch>
-  </AuthContext>
+  </AuthProvider>
 );
 
 const AppRouter = () => {
@@ -51,7 +49,7 @@ const AppRouter = () => {
   return (
     <Router>
       {console.log("SUBDOMAIN", subdomain)}
-      {console.log('BASE_URL', process.env.REACT_APP_BASE_URL)}
+      {console.log("BASE_URL", process.env.REACT_APP_BASE_URL)}
       {console.log("FB_ENV", process.env.REACT_APP_FB_ENV)}
       {subdomain === "escaperoom" && <Route component={EscapeRoomRoutes} />}
       {subdomain === null && <Route component={StandardRoutes} />}
