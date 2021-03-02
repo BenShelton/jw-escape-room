@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import ReactGA from "react-ga";
 
 import db, { auth, functions } from "../firebase";
 
@@ -14,6 +15,10 @@ function AuthProvider({ children }) {
   const [hostRecord, setHostRecord] = useState();
 
   const login = async (email, password) => {
+    ReactGA.event({
+      category: "User",
+      action: "Logged in"
+    });
     await auth.signInWithEmailAndPassword(email, password);
   };
 
@@ -27,6 +32,10 @@ function AuthProvider({ children }) {
     const registerHost = functions.httpsCallable("registerHost");
     const hostRecord = await registerHost(user);
     setHostRecord(hostRecord);
+    ReactGA.event({
+      category: "User",
+      action: "Created an Account"
+    });
     return auth.signInWithEmailAndPassword(email, password);
   };
 

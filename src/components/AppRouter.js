@@ -1,4 +1,5 @@
 import React from "react";
+import ReactGA from "react-ga";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import RegistrationPage from "./RegistrationPage";
@@ -14,6 +15,15 @@ import HostOfficiate from "./HostOfficiate";
 import HostAccount from "./HostAccount";
 import ShowcasePage from "./ShowcasePage";
 import { getSubdomain } from "../helpers/utils";
+import AnalyticsTracker from "./AnalyticsTracker";
+import { TRACKING_ID } from "../constants";
+
+if (process.env.REACT_APP_FB_ENV === "production") {
+  console.log("REPORTING ANALYTICS WITH ID " + TRACKING_ID);
+  ReactGA.initialize(TRACKING_ID);
+} else {
+  console.log("NOT REPORTING ANALYTICS");
+}
 
 export const EscapeRoomRoutes = () => (
   <Switch>
@@ -40,6 +50,7 @@ const StandardRoutes = () => (
           <HostOfficiate />
         </GameHostContext>
       </PrivateRoute>
+      <AnalyticsTracker />
     </Switch>
   </AuthProvider>
 );
