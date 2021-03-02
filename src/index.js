@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 // import { config } from "dotenv";
 
-import AppRouter from "./components/AppRouter";
+import App from "./components/App";
 // config();
 
-ReactDOM.render(<AppRouter />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
