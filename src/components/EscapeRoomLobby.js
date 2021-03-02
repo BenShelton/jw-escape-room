@@ -243,16 +243,14 @@ const EscapeRoomLobby = props => {
       <Helmet>
         <title>{`${room.title} - Virtual Escape Room`}</title>
       </Helmet>
-      {stage !== "playing" && stage !== "final" && (
-        <InfoModal
-          title={`A message from ${game.host.firstName} ${game.host.lastName}`}
-          message={game.message}
-          meetingId={game.meeting.id}
-          meetingPass={game.meeting.password}
-          open={openModal}
-          setOpen={setOpenModal}
-        ></InfoModal>
-      )}
+      <InfoModal
+        title={`A message from ${game.host.firstName} ${game.host.lastName}`}
+        message={game.message}
+        meetingId={game.meeting.id}
+        meetingPass={game.meeting.password}
+        open={openModal}
+        setOpen={setOpenModal}
+      ></InfoModal>
       {room.outro.background.type === "video" && (
         <video
           autoPlay
@@ -265,14 +263,16 @@ const EscapeRoomLobby = props => {
         ></video>
       )}
       <div className="game__screen">
-        <button
-          className="game__info-toggle"
-          onClick={() => {
-            setOpenModal(true);
-          }}
-        >
-          <InfoOutlinedIcon />
-        </button>
+        {stage !== "playing" && stage !== "final" && (
+          <button
+            className="game__info-toggle"
+            onClick={() => {
+              setOpenModal(true);
+            }}
+          >
+            <InfoOutlinedIcon />
+          </button>
+        )}
         {getScreen(screen)}
       </div>
       <div className="game__overlay"></div>
