@@ -23,32 +23,26 @@ class TeamScorer {
     this._rankings = [];
     // blindly enter first team into rankigs with duration
     this._rankings.push(this._createTeamScoreObj(this._teams[0]));
-    // console.log("INCEPTOR ", this._createTeamScoreObj(this._teams[0]));
     // if there is only 1 team there is nothing to be compared
     if (this._teams.length === 1) return;
     // start from second team
     for (let i = 1; i < this._teams.length; i++) {
       // generate score object
       const currentTeam = this._createTeamScoreObj(this._teams[i]);
-      // console.log("KILLER " + currentTeam[0]);
       let spot = null;
       // search for correct position in rankings
       for (let j = 0; j < this._rankings.length; j++) {
         const challenger = this._rankings[j];
-        // console.log("CHALLENGER " + j + ` ${challenger[0]}`);
         if (this._isBetter(currentTeam[1], challenger[1])) {
-          // console.log(`${currentTeam[0]} killed ${challenger[0]}`);
           spot = j;
           break;
         }
       }
       // console.log("spot", spot);
       if (spot !== null) {
-        // console.log(`${currentTeam[0]} inserted at spot`);
         this._rankings.splice(spot, 0, currentTeam);
       } else {
         this._rankings.push(currentTeam);
-        // console.log(`${currentTeam[0]} pushed to back`);
       }
     }
     // eslint-disable-next-line
@@ -97,10 +91,8 @@ class TeamScorer {
     // handle case where there is not endtime for
     // one of or both teams
     if (team1.endTime && !team2.endTime) {
-      // console.log("Better with completion");
       return true;
     } else if (!team1.endTime && team2.endTime) {
-      // console.log("-- Worse with incompletion");
       return false;
     } else if (
       (!team1.endTime && !team2.endTime) ||
@@ -111,20 +103,16 @@ class TeamScorer {
       const team2Index = this._challengeMap.indexOf(team2.currentChallenge);
       if (team1Index !== team2Index) {
         // only make decision here if they are not equal
-        // console.log("-- Deciding by better challenge progression...");
         return team1Index < team2Index;
       }
       // teams were tied on challenge, compare clues
       if (team1.usedClues !== team2.usedClues) {
-        // console.log("-- Tied on challenge progression, deciding on clues...");
         return team1.usedClues < team2.usedClues;
       }
       // clues were also tied
       // QUESTION: should this return true or false in the case of a definite tie??
-      // console.log("-- Teams dead tied");
       return true;
     }
-    // console.log("Deciding on best endtime");
     // both teams have different endtimes
     return team1.netDuration < team2.netDuration;
   }

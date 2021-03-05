@@ -9,7 +9,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test:api": "mocha \"classes/CMSApi.test.js\" --exit",
-    "test": "mocha --reporter spec",
+    "test": "mocha --recursive ./test --exit",
     "test:emulator": "firebase emulators:exec \"npm test\""
   },
   "engines": {
@@ -21,6 +21,7 @@
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
