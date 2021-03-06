@@ -270,26 +270,49 @@ describe("TeamScorer", () => {
     });
   });
   describe("getRankings", () => {
-    const Scorer = new TeamScorer({
-      teams: teamsObj,
-      startTime,
-      challengeMap
+    it("should get rankings", () => {
+      const Scorer = new TeamScorer({
+        teams: teamsObj,
+        startTime,
+        challengeMap
+      });
+
+      const rankings = Scorer.getRankings();
+
+      // get only names
+      const teamNamesInOrder = rankings.map(([name]) => name);
+
+      expect(teamNamesInOrder).to.eql([
+        "randomId3",
+        "randomId5",
+        "randomId1",
+        "randomId2",
+        "randomId4",
+        "randomId8",
+        "randomId6",
+        "randomId7"
+      ]);
     });
+  });
+  describe("getRankingsObject", () => {
+    it("should get rankings obejct", () => {
+      const Scorer = new TeamScorer({
+        teams: {
+          randomId1: {
+            currentChallenge: "outro",
+            endTime: 1614867738, // 20 min 1200 seconds
+            usedClues: [2, 3] // 120 seconds
+          }
+        },
+        startTime,
+        challengeMap
+      });
 
-    const rankings = Scorer.getRankings();
+      const rankings = Scorer.getRankings();
 
-    // get only names
-    const teamNamesInOrder = rankings.map(([name]) => name);
+      // get only names
 
-    expect(teamNamesInOrder).to.eql([
-      "randomId3",
-      "randomId5",
-      "randomId1",
-      "randomId2",
-      "randomId4",
-      "randomId8",
-      "randomId6",
-      "randomId7"
-    ]);
+      console.log(Scorer.getRankingsObject());
+    });
   });
 });

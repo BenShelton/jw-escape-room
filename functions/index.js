@@ -8,6 +8,7 @@ const { nanoid } = require("nanoid");
 
 const utils = require("./utils");
 const CMSApi = require("./classes/CMSApi");
+const TeamScorer = require("./classes/TeamScorer");
 
 /**
  * Temp api endpoint that fetches and updates
@@ -158,4 +159,89 @@ exports.registerHost = functions.https.onCall(async (data, context) => {
       .update({ cosigned: [...existingCosignees, uid] });
   }
   return { uid, ...hostRecord };
+});
+
+/**
+ * End game and rank teams when game is over
+ */
+exports.endGame = functions.https.onCall(async (data, context) => {
+  const { gameId } = data;
+
+  const { uid } = context.auth;
+
+  const gameLedgerRoot = `/er-games/${gameId}`;
+
+  // verify that user is host of game
+  const gameLedger = await admin
+    .database()
+    .ref(gameLedgerRoot)
+    .get();
+
+  if (!gameLedger.exists()) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      `"Game with id ${gameId}" not found.`
+    );
+  }
+
+  if (gameLedger.val().host !== uid) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      `"You are not the host of this game.`
+    );
+  }
+
+  const teams = await admin
+    .database()
+    .ref(`er-teams/${gameId}`)
+    .get();
+
+  const gameFirestore = await admin
+    .firestore()
+    .collection("games")
+    .doc(gameId)
+    .get();
+
+  if (!gameFirestore.exists) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      `Game with id "${gameId}" not found in firestore.`
+    );
+  }
+
+  // get room
+  const room = await admin
+    .firestore()
+    .collection("rooms")
+    .doc(gameFirestore.data().room)
+    .get();
+
+  if (!room.exists) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      `Room with id "${gameFirestore.data().room}" not found in firestore.`
+    );
+  }
+
+  const updates = {}; // hold all updates to rdb
+
+  // set game stage to final
+  updates[`${gameLedgerRoot}/stage`] = "final";
+
+  const scorer = new TeamScorer({
+    teams: teams.val(),
+    startTime: gameLedger.val().startTime,
+    challengeMap: room.data().challengeMap
+  });
+
+  scorer.getRankings();
+
+  const rankings = scorer.getRankingsObject();
+
+  updates[`er-rankings/${gameId}`] = rankings;
+
+  return admin
+    .database()
+    .ref()
+    .update(updates);
 });

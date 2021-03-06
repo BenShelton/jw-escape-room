@@ -24,7 +24,7 @@ class TeamScorer {
     // blindly enter first team into rankigs with duration
     this._rankings.push(this._createTeamScoreObj(this._teams[0]));
     // if there is only 1 team there is nothing to be compared
-    if (this._teams.length === 1) return;
+    if (this._teams.length === 1) return this._rankings;
     // start from second team
     for (let i = 1; i < this._teams.length; i++) {
       // generate score object
@@ -45,8 +45,18 @@ class TeamScorer {
         this._rankings.push(currentTeam);
       }
     }
-    // eslint-disable-next-line
     return this._rankings;
+  }
+
+  // OPTIMIZE: sloppy job here, only added to accomodate
+  // firebase's lack of arrays, should make private function
+  // and return from getRankings but i was too lazy to adapt tests
+  getRankingsObject() {
+    const obj = {};
+    this._rankings.forEach((team, index) => {
+      obj[index + 1] = { id: team[0], ...team[1] };
+    });
+    return obj;
   }
 
   /**
