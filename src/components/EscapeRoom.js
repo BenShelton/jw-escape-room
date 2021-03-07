@@ -56,7 +56,7 @@ const EscapeRoom = () => {
 
   const [loadingChallenge, setLoadingChallenge] = useState(true);
   const [challenge, setChallenge] = useState(null);
-  const [endTime, setEndTime] = useState();
+  const [gameEndtime, setGameEndtime] = useState();
 
   useEffect(() => {
     // calculate end time with start time and clues
@@ -64,7 +64,7 @@ const EscapeRoom = () => {
     const calculatedEndTime =
       startTime + room.duration * 60 - twoMinuteDeductions;
     console.log("Calulated end time", calculatedEndTime);
-    setEndTime(calculatedEndTime);
+    setGameEndtime(calculatedEndTime);
   }, [usedClues]);
 
   useEffect(() => {
@@ -145,9 +145,11 @@ const EscapeRoom = () => {
           <h3>{getChallengeTracker()}</h3>
         </div>
         <div className="escaperoom__header__timer">
-          {endTime && (
+          {gameEndtime && (
             <Countdown
-              date={moment.unix(endTime).toDate()}
+              onPause={() => console.log("COUNTER PAUSED")}
+              // controlled={Boolean(currentTeam.endTime)}
+              date={moment.unix(gameEndtime).toDate()}
               renderer={props => <Timer {...props} />}
               overtime={true}
             />

@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import moment from "moment";
 import _ from "lodash";
 
 import db, { auth, rdb } from "../firebase";
@@ -25,6 +26,7 @@ function EscapeRoomProvider({ children }) {
   const [remainingChallenges, setRemainingChallenges] = useState([]);
   const [playingChallenge, setPlayingChallenge] = useState();
   const [usedClues, setUsedClues] = useState([]);
+  const [finalRankings, setFinalRankings] = useState();
 
   let { gameId } = useParams();
 
@@ -34,6 +36,7 @@ function EscapeRoomProvider({ children }) {
     "dividing",
     "ready",
     "playing",
+    "finishing",
     "final"
   ];
 
@@ -43,7 +46,9 @@ function EscapeRoomProvider({ children }) {
       collecting: collectingTasks,
       dividing: dividingTasks,
       ready: readyTasks,
-      playing: playingTasks
+      playing: playingTasks,
+      finishing: finishingTasks,
+      final: finalTasks
     }[stage]);
 
   // OPTIMIZE: this could be written better
@@ -218,6 +223,18 @@ function EscapeRoomProvider({ children }) {
     setPlayingChallenge("intro");
   };
 
+  const finishingTasks = () => {
+    console.log('Running "finishingTasks"');
+  };
+
+  const finalTasks = async () => {
+    console.log('Running "finalTasks"');
+    // get final rankings
+    await rdb.ref(`er-rankings/${gameId}`).once("value", snapshot => {
+      setFinalRankings(snapshot.val());
+    });
+  };
+
   /**
    * Check for leader update on team update
    */
@@ -323,6 +340,10 @@ function EscapeRoomProvider({ children }) {
         .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
         .set("outro");
     }
+    // call endGame to set end time
+    if (playingChallenge === "outro") {
+      return endGame();
+    }
     return rdb
       .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
       .set(remainingChallenges[0]);
@@ -334,7 +355,6 @@ function EscapeRoomProvider({ children }) {
       room.challenges[playingChallenge].questions,
       "answer"
     );
-    console.log("Answers", answers);
     const wrong = [];
     answers.forEach((answer, i) =>
       submissions[i] !== answer ? wrong.push(i) : null
@@ -359,6 +379,21 @@ function EscapeRoomProvider({ children }) {
       });
   };
 
+  const endGame = () => {
+    if (leader.id === currentPlayer.uid) {
+      rdb
+        .ref(`er-teams/${gameId}/${currentTeam.id}/endTime`)
+        .set(moment().unix());
+    }
+  };
+
+  window.skipToEnd = () => {
+    setRemainingChallenges([]);
+    rdb
+      .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
+      .set("outro");
+  };
+
   // listen to team's current challenge
   useEffect(() => {
     if (currentTeam && currentTeam.currentChallenge) {
@@ -370,6 +405,9 @@ function EscapeRoomProvider({ children }) {
       console.log(
         `Setting playingChallenge to ${currentTeam.currentChallenge}`
       );
+      if (currentTeam.currentChallenge === "outro") {
+        endGame();
+      }
     }
     if (currentTeam && currentTeam.usedClues) {
       setUsedClues(currentTeam.usedClues);
@@ -392,7 +430,8 @@ function EscapeRoomProvider({ children }) {
     nextChallenge,
     checkAnswers,
     setClue,
-    usedClues
+    usedClues,
+    finalRankings
   };
 
   return (

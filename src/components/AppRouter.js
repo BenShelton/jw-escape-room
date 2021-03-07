@@ -13,7 +13,6 @@ import GameHostContext from "../contexts/GameHostContext";
 import HostGames from "./HostGames";
 import HostOfficiate from "./HostOfficiate";
 import HostAccount from "./HostAccount";
-import ShowcasePage from "./ShowcasePage";
 import { getSubdomain } from "../helpers/utils";
 import AnalyticsTracker from "./AnalyticsTracker";
 import { TRACKING_ID } from "../constants";
@@ -40,7 +39,6 @@ const StandardRoutes = () => (
   <AuthProvider>
     <Switch>
       <Route path="/" component={LoginPage} exact />
-      <Route path="/showcase" component={ShowcasePage} exact />
       <Route path="/register" component={RegistrationPage} exact />
       <Route path="/forgot-password" component={ForgotPasswordPage} exact />
       <PrivateRoute path="/account" component={HostAccount} exact />

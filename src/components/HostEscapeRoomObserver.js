@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 import _ from "lodash";
 
 import { useGameHost } from "../contexts/GameHostContext";
 import Block from "./Block";
 import { sharedStyles } from "../theme";
-import { rdb } from "../firebase";
+import { rdb, functions } from "../firebase";
 
 const useStyles = makeStyles(theme => ({
   ...sharedStyles(theme)
@@ -34,9 +35,20 @@ const TeamStatus = ({ team }) => {
 };
 
 const HostEscapeRoomObserver = () => {
-  const { teams, players } = useGameHost();
+  const { teams, players, game, setStage } = useGameHost();
 
   const [populatedTeams, setPopulatedTeams] = useState([]);
+
+  const handleEndGame = async () => {
+    // set stage to "finishing"
+    setStage("finishing");
+    const endGame = functions.httpsCallable("endGame");
+    try {
+      await endGame({ gameId: game.id });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // OPTIMIZE: better algorithm here
   const getTeamPlayers = teamId => {
@@ -69,6 +81,9 @@ const HostEscapeRoomObserver = () => {
     <Block>
       {populatedTeams.length &&
         populatedTeams.map(team => <TeamStatus team={team} />)}
+      <Button variant="contained" onClick={handleEndGame}>
+        End Game
+      </Button>
     </Block>
   );
 };

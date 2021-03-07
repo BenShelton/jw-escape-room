@@ -104,7 +104,7 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   );
 };
 
-const Waiting = ({ text, subtext }) => (
+const Waiting = ({ text, subtext, children }) => (
   <div className="game__screen__waiting">
     <div className="game__screen__waiting__inner">
       <p className="game__screen__waiting__heading">
@@ -116,10 +116,20 @@ const Waiting = ({ text, subtext }) => (
           dangerouslySetInnerHTML={{ __html: subtext }}
         ></p>
       )}
+      {children}
       <CircularProgress style={{ color: "#fff" }} />
     </div>
   </div>
 );
+
+const Completed = () => {
+  return (
+    <Waiting
+      text="Great Job!"
+      subtext="The other teams are still finishing up. Sit tight, the host will reveal the winner soon!"
+    ></Waiting>
+  );
+};
 
 const EscapeRoomLobby = props => {
   let {
@@ -146,11 +156,11 @@ const EscapeRoomLobby = props => {
     });
   }, []);
 
-  // listen here for when team completes all challenges
-  // get current time and write to team
-  // mark completed in team ledger
-  // if the stage is not "final" move set screen to waiting with team's final stats
-  // on stage final bring to victory page
+  useEffect(() => {
+    if (currentTeam && currentTeam.endTime) {
+      setScreen("waiting:completed");
+    }
+  }, [currentTeam]);
 
   /**
    * Listen to stage change and map stage to screen
@@ -179,6 +189,8 @@ const EscapeRoomLobby = props => {
         return setScreen("waiting:startgame");
       case "playing":
         return setScreen("play");
+      case "finishing":
+        return setScreen("waiting:calculating");
       case "final":
         return setScreen("showcase");
       default:
@@ -226,6 +238,10 @@ const EscapeRoomLobby = props => {
         return <Waiting text="Loading" />;
       case "play":
         return <EscapeRoom />;
+      case "waiting:completed":
+        return <Completed />;
+      case "waiting:calculating":
+        return <Waiting text="Determining winners" />;
       case "showcase":
         return <EscapeRoomShowcase />;
       default:
@@ -237,7 +253,7 @@ const EscapeRoomLobby = props => {
     <main
       className={`game ${
         stage !== "dormant" ? "game--in-play" : ""
-      } game--stage--${stage}`}
+      } game--stage--${currentTeam && currentTeam.endTime ? "dormant" : stage}`}
       style={{ backgroundImage: `url(${room.intro.background})` }}
     >
       <Helmet>
