@@ -138,9 +138,9 @@ const EscapeRoomLobby = props => {
     stage,
     currentPlayer,
     enterPlayer,
-    getTeams,
     currentTeam,
-    leader
+    leader,
+    completedGame
   } = useGame();
   let [entered, setEntered] = useState(false);
   let [screen, setScreen] = useState("");
@@ -157,10 +157,11 @@ const EscapeRoomLobby = props => {
   }, []);
 
   useEffect(() => {
-    if (currentTeam && currentTeam.endTime) {
+    console.log("Completed GAME", completedGame);
+    if (completedGame === true) {
       setScreen("waiting:completed");
     }
-  }, [currentTeam]);
+  }, [completedGame]);
 
   /**
    * Listen to stage change and map stage to screen

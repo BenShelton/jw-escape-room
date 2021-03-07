@@ -9,36 +9,44 @@ import "animate.css/animate.min.css";
 import { render } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 
-const Timer = ({ hours, minutes, seconds, completed }) => (
-  <ul
-    className={`escaperoom__timer ${
-      completed
-        ? "escaperoom__timer--completed animate__animated animate__heartBeat"
-        : ""
-    }`}
-  >
-    {hours > 0 && (
+const Timer = ({ hours, minutes, seconds, completed }) => {
+  const { playingChallenge } = useGame();
+
+  return (
+    <ul
+      className={`escaperoom__timer ${
+        completed
+          ? "escaperoom__timer--completed animate__animated animate__heartBeat"
+          : ""
+      } ${
+        playingChallenge === "outro"
+          ? "escaperoom__timer--finished animate__animated animate__bounceOutUp"
+          : ""
+      }`}
+    >
+      {hours > 0 && (
+        <li>
+          <p className="escaperoom__timer__value">
+            {completed && "-"}
+            {zeroPad(hours)}
+          </p>
+          <p className="escaperoom__timer__label">Hours</p>
+        </li>
+      )}
       <li>
         <p className="escaperoom__timer__value">
-          {completed && "-"}
-          {zeroPad(hours)}
+          {completed && !hours && "-"}
+          {zeroPad(minutes)}
         </p>
-        <p className="escaperoom__timer__label">Hours</p>
+        <p className="escaperoom__timer__label">Minutes</p>
       </li>
-    )}
-    <li>
-      <p className="escaperoom__timer__value">
-        {completed && !hours && "-"}
-        {zeroPad(minutes)}
-      </p>
-      <p className="escaperoom__timer__label">Minutes</p>
-    </li>
-    <li>
-      <p className="escaperoom__timer__value">{zeroPad(seconds)}</p>
-      <p className="escaperoom__timer__label">Seconds</p>
-    </li>
-  </ul>
-);
+      <li>
+        <p className="escaperoom__timer__value">{zeroPad(seconds)}</p>
+        <p className="escaperoom__timer__label">Seconds</p>
+      </li>
+    </ul>
+  );
+};
 
 const EscapeRoom = () => {
   const {
@@ -51,7 +59,8 @@ const EscapeRoom = () => {
     nextChallenge,
     setClue,
     usedClues,
-    currentTeam
+    currentTeam,
+    setCompletedGame
   } = useGame();
 
   const [loadingChallenge, setLoadingChallenge] = useState(true);
@@ -126,6 +135,10 @@ const EscapeRoom = () => {
     }
     setLoadingChallenge(true);
     nextChallenge();
+  };
+
+  const handleNonLeaderFinish = () => {
+    setCompletedGame(true);
   };
 
   const getChallengeTracker = () =>
@@ -225,6 +238,17 @@ const EscapeRoom = () => {
                     </button>
                   </div>
                 </form>
+              )}
+              {leader.id !== currentPlayer.uid && playingChallenge === "outro" && (
+                <div className="escaperoom__controls">
+                  <button
+                    type="submit"
+                    className="escaperoom__button escaperoom__button--unlock"
+                    onClick={handleNonLeaderFinish}
+                  >
+                    <span className="escaperoom__button__label">Finish</span>
+                  </button>
+                </div>
               )}
               {leader.id !== currentPlayer.uid && challenge.questions && (
                 <div className="escaperoom__questions__nonleader">

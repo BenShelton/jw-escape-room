@@ -27,6 +27,7 @@ function EscapeRoomProvider({ children }) {
   const [playingChallenge, setPlayingChallenge] = useState();
   const [usedClues, setUsedClues] = useState([]);
   const [finalRankings, setFinalRankings] = useState();
+  const [completedGame, setCompletedGame] = useState(false);
 
   let { gameId } = useParams();
 
@@ -335,14 +336,13 @@ function EscapeRoomProvider({ children }) {
   };
 
   const nextChallenge = async () => {
+    if (currentTeam.currentChallenge === "outro") {
+      setCompletedGame(true);
+    }
     if (!remainingChallenges.length) {
       return rdb
         .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
         .set("outro");
-    }
-    // call endGame to set end time
-    if (playingChallenge === "outro") {
-      return endGame();
     }
     return rdb
       .ref(`er-teams/${gameId}/${currentTeam.id}/currentChallenge`)
@@ -431,7 +431,9 @@ function EscapeRoomProvider({ children }) {
     checkAnswers,
     setClue,
     usedClues,
-    finalRankings
+    finalRankings,
+    completedGame,
+    setCompletedGame
   };
 
   return (
