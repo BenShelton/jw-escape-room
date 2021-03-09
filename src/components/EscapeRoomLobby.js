@@ -73,6 +73,7 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    if (name === "") return;
     await enterPlayer(name);
     setEntered(true);
     setScreen("waiting:host");
@@ -83,6 +84,9 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
       <div className="game__screen__enter__inner">
         <form className="jw" noValidate onSubmit={handleSubmit}>
           <label htmlFor="player-name-input">enter your name</label>
+          <p className="game__screen__enter__hint">
+            please use your same name you are under in the meeting
+          </p>
           <div className="game__screen__enter__input-row">
             <input
               value={name}

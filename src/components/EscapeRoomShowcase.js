@@ -36,7 +36,25 @@ const Rank = ({ index }) => {
   }
 };
 
-const ShowcasePage = () => {
+const ShowcaseStats = ({ team }) => {
+  const minutes = moment.duration(team.netDuration, "seconds").get("minutes");
+  const seconds = moment.duration(team.netDuration, "seconds").get("seconds");
+
+  return (
+    <>
+      <strong>{minutes}</strong> minute{minutes > 1 ? "s" : ""}
+      {seconds > 1 && (
+        <span>
+          <strong>{` ${seconds}`}</strong> seconds
+        </span>
+      )}{" "}
+      / <strong>{team.usedClues}</strong> clue
+      {team.usedClues > 1 || team.usedClues === 0 ? "s" : ""}
+    </>
+  );
+};
+
+const EscapeRoomShowcase = () => {
   const { finalRankings, players, teams } = useGame();
 
   const [pedestal, setPedestal] = useState([]);
@@ -268,55 +286,46 @@ const ShowcasePage = () => {
                     animationData={goldMedalAnimation}
                   />
                 )}
-                <p className="showcase__rank">
-                  <Rank index={i} /> Place
-                </p>
-                <p
-                  className={`showcase__name ${
-                    announceWinner ? "animate__animated animate__tada" : ""
-                  }`}
-                >
-                  {team.name}
-                </p>
-                <p className="showcase__stats">
-                  <strong>
-                    {team.netDuration <= 59
-                      ? moment
-                          .duration(team.netDuration, "seconds")
-                          .as("seconds")
-                      : moment
-                          .duration(team.netDuration, "seconds")
-                          .as("minutes")}
-                  </strong>{" "}
-                  {team.netDuration <= 59 ? "seconds" : "minutes"} /{" "}
-                  <strong>{team.usedClues}</strong> clue
-                  {team.usedClues > 1 || team.usedClues === 0 ? "s" : ""}
-                </p>
-                <p className="showcase__leader">
-                  Led by{" "}
-                  {team.mock !== true
-                    ? players[teams[team.id].leader].name
-                    : ""}
-                </p>
-                {i === 0 && (
-                  <>
-                    <button
-                      onClick={e => handlePlayersToggle(e, i)}
-                      className="showcase__players-toggle"
-                    >
-                      Show Players <KeyboardArrowDownIcon />
-                    </button>
-                    <ul
-                      ref={mapIndexToPlayersRef(i)}
-                      className="showcase__players"
-                    >
-                      {/* <li className="showcase__current-player">Julian</li> */}
-                      {playerMap[team.id].map(player => (
-                        <li key={player.id}>{player.name}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
+                <div className="showcase__team-info">
+                  <p className="showcase__rank">
+                    <Rank index={i} /> Place
+                  </p>
+                  <p
+                    className={`showcase__name ${
+                      announceWinner ? "animate__animated animate__tada" : ""
+                    }`}
+                  >
+                    {team.name}
+                  </p>
+                  <p className="showcase__stats">
+                    <ShowcaseStats team={team} />
+                  </p>
+                  <p className="showcase__leader">
+                    Led by{" "}
+                    {team.mock !== true
+                      ? players[teams[team.id].leader].name
+                      : ""}
+                  </p>
+                  {i === 0 && (
+                    <>
+                      <button
+                        onClick={e => handlePlayersToggle(e, i)}
+                        className="showcase__players-toggle"
+                      >
+                        Show Players <KeyboardArrowDownIcon />
+                      </button>
+                      <ul
+                        ref={mapIndexToPlayersRef(i)}
+                        className="showcase__players"
+                      >
+                        {/* <li className="showcase__current-player">Julian</li> */}
+                        {playerMap[team.id].map(player => (
+                          <li key={player.id}>{player.name}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
               </li>
             ))}
         </ul>
@@ -326,4 +335,4 @@ const ShowcasePage = () => {
   );
 };
 
-export default ShowcasePage;
+export default EscapeRoomShowcase;

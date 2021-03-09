@@ -11,8 +11,12 @@
       color: #fff
       display: block
       font-size: 1.3em
-      margin-bottom: 20px
+      margin-bottom: 15px
       text-transform: lowercase
+
+  &__hint
+    color: #fff
+    margin-bottom: 15px
 
   &__input-row
     display: flex
@@ -27,7 +31,7 @@
       margin-right: 10px
       position: relative
       z-index: 2
-      color: #00dbff
+      color: #444
 
     & .submit
       position: absolute
@@ -42,7 +46,16 @@
       z-index: 1
       opacity: 0
       transition: all 300ms
+      cursor: pointer
 
       &--show
         transform: translateY(4em)
         opacity: 1
+
+        .MuiSvgIcon-root
+          position: absolute
+          top: 0
+          left: 0
+          right: 0
+          bottom: 0
+          margin: auto

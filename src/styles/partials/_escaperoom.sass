@@ -1,6 +1,7 @@
 $headerHeight: 125px
 
 .escaperoom
+  $self: &
   height: 100%
   font-size: 1rem
 
@@ -88,24 +89,26 @@ $headerHeight: 125px
     position: fixed
     bottom: 0
     left: 0
-    height: 35px
+    // height: 35px
     display: flex
+    justify-content: space-between
     width: 100%
     transition: height 300ms
 
-    &:hover
-      height: 50px
+    // &:hover
+    //   height: 50px
 
   &__button
-    outline: none
-    border: 0
-    -webkit-appearance: none
-    cursor: pointer
+    @include reset-button
     color: #fff
     font-size: 1em
     text-transform: lowercase
     transition: all 300ms
     font-weight: bold
+    height: 175px
+    max-width: 175px
+    width: 175px
+    position: relative
 
     &__label
       margin-right: 5px
@@ -126,18 +129,33 @@ $headerHeight: 125px
       flex-grow: 1
       background-color: $primaryBlue
       color: darken($primaryBlue, 40)
+      border-top-left-radius: 100%
+      margin-left: auto
 
       &:hover
         background-color: darken($primaryBlue, 8)
 
+      #{$self}__button-inner
+        display: table
+        position: absolute
+        right: 30px
+        bottom: auto
+
     &--clue
-      width: 300px
-      max-width: 35%
+      // width: 300px
+      // max-width: 35%
       background-color: $primaryPurple
       color: darken($primaryPurple, 30)
+      border-top-right-radius: 100%
 
       &:hover
         background-color: darken($primaryPurple, 8)
+
+      #{$self}__button-inner
+        display: table
+        position: absolute
+        left: 30px
+        bottom: auto
 
   &__questions
     color: #fff
@@ -179,6 +197,11 @@ $headerHeight: 125px
         font-weight: 500
         margin-bottom: 10px
 
-@media screen and (max-width: $mobileBreakpoint2)
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
   .escaperoom
-    font-size: 14px
+    font-size: 15px
+
+    &__button
+      height: 125px
+      max-width: 125px
+      width: 125px

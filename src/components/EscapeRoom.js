@@ -211,30 +211,34 @@ const EscapeRoom = () => {
                         }
                         className="escaperoom__button escaperoom__button--clue"
                       >
-                        <span className="escaperoom__button__label">
-                          Get a Clue (-2 min)
-                        </span>
-                        <SearchIcon
-                          className="escaperoom__button__icon"
-                          fontSize="small"
-                        />
+                        <div class="escaperoom__button-inner">
+                          <span className="escaperoom__button__label">
+                            Get a Clue <br /> (-2 min)
+                          </span>
+                          <SearchIcon
+                            className="escaperoom__button__icon"
+                            fontSize="small"
+                          />
+                        </div>
                       </button>
                     )}
                     <button
                       type="submit"
                       className="escaperoom__button escaperoom__button--unlock"
                     >
-                      <span className="escaperoom__button__label">
-                        {typeof playingChallenge === "number"
-                          ? "Unlock"
-                          : "Next"}
-                      </span>
-                      {typeof playingChallenge === "number" && (
-                        <LockOpenIcon
-                          className="escaperoom__button__icon"
-                          fontSize="small"
-                        />
-                      )}
+                      <div class="escaperoom__button-inner">
+                        <span className="escaperoom__button__label">
+                          {typeof playingChallenge === "number"
+                            ? "Unlock"
+                            : "Next"}
+                        </span>
+                        {typeof playingChallenge === "number" && (
+                          <LockOpenIcon
+                            className="escaperoom__button__icon"
+                            fontSize="small"
+                          />
+                        )}
+                      </div>
                     </button>
                   </div>
                 </form>
