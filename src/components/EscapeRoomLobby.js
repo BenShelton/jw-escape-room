@@ -4,16 +4,15 @@ import moment from "moment";
 import { Helmet } from "react-helmet";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import ReactGA from "react-ga";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
-import InfoModal from "./InfoModal";
 import { render, isVideo } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 import EscapeRoom from "./EscapeRoom";
 import EscapeRoomShowcase from "./EscapeRoomShowcase";
+import EscapeRoomInformation from "./EscapeRoomInformation";
 
 const Counter = ({ days, hours, minutes, seconds, completed }) => (
   <div className="invitation__countdown">
@@ -63,7 +62,6 @@ const Invitation = ({ game, room, msg }) => (
 
 const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   const [name, setName] = useState("");
-  const [error, setError] = useState();
 
   useEffect(() => {
     if (currentPlayer && currentPlayer.displayName) {
@@ -149,7 +147,6 @@ const EscapeRoomLobby = props => {
   let [entered, setEntered] = useState(false);
   let [screen, setScreen] = useState("");
   let [team, setTeam] = useState();
-  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     // GA log room visit
@@ -262,16 +259,9 @@ const EscapeRoomLobby = props => {
       style={{ backgroundImage: `url(${room.intro.background})` }}
     >
       <Helmet>
-        <title>{`${room.title} - Virtual Escape Room`}</title>
+        <title>{`${render(room.title)} - Virtual Escape Room`}</title>
       </Helmet>
-      <InfoModal
-        title={`A message from ${game.host.firstName} ${game.host.lastName}`}
-        message={game.message}
-        meetingId={game.meeting.id}
-        meetingPass={game.meeting.password}
-        open={openModal}
-        setOpen={setOpenModal}
-      ></InfoModal>
+      {stage !== "playing" && stage !== "final" && <EscapeRoomInformation />}
       {room.outro.background.type === "video" && (
         <video
           autoPlay
@@ -283,19 +273,7 @@ const EscapeRoomLobby = props => {
           src={room.outro.background.url}
         ></video>
       )}
-      <div className="game__screen">
-        {stage !== "playing" && stage !== "final" && (
-          <button
-            className="game__info-toggle"
-            onClick={() => {
-              setOpenModal(true);
-            }}
-          >
-            <InfoOutlinedIcon />
-          </button>
-        )}
-        {getScreen(screen)}
-      </div>
+      <div className="game__screen">{getScreen(screen)}</div>
       <div className="game__overlay"></div>
     </main>
   );

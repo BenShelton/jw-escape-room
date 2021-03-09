@@ -22,7 +22,7 @@ const InfoModal = ({
   return createPortal(
     <>
       {open && (
-        <div className="modal" onClick={handleClose}>
+        <div className="modal modal--type--box" onClick={handleClose}>
           <div className="modal__box">
             <button className="modal__close">
               <CloseIcon />

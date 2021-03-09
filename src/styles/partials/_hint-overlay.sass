@@ -1,0 +1,62 @@
+.hint-overlay
+  @include glass-blur
+  height: 100vh
+  width: 100%
+  position: fixed
+  z-index: 3
+  display: flex
+  justify-content: center
+  align-items: center
+  opacity: 0
+  // transition: opacity 500ms
+
+  &__text
+    font-size: 4.5vmax
+    color: #FFA161
+    text-transform: lowercase
+    font-family: 'Permanent Marker', cursive
+    max-width: 40%
+    margin-left: 50%
+    letter-spacing: 1px
+    pointer-events: none
+
+  &__arrow
+    position: absolute
+    top: 38px
+    right: 77px
+    pointer-events: none
+
+.hint-overlay--entering
+  animation-name: fadeIn
+  animation-duration: 1000ms
+
+.hint-overlay--entered
+  opacity: 1
+
+.hint-overlay--exiting
+  animation-name: fadeOut
+  animation-duration: 500ms
+
+.hint-overlay--exit
+  opacity: 0
+
+@keyframes fadeIn
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+@keyframes fadeOut
+  from
+    opacity: 1
+  to
+    opacity: 0
+
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
+  .hint-overlay
+
+    &__text
+      margin-left: initial
+      font-size: 5.5vmax
+      max-width: 60%
+      margin-bottom: 20%

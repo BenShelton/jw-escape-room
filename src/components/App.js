@@ -1,12 +1,15 @@
 import React from "react";
 import { ThemeProvider } from "@material-ui/core/styles";
+import { CookiesProvider } from "react-cookie";
 
 import theme from "../theme";
 import AppRouter from "./AppRouter";
 
-const App = ({}) => (
+const App = () => (
   <ThemeProvider theme={theme}>
-    <AppRouter />
+    <CookiesProvider>
+      <AppRouter />
+    </CookiesProvider>
   </ThemeProvider>
 );
 
