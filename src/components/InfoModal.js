@@ -3,16 +3,9 @@ import { createPortal } from "react-dom";
 import CloseIcon from "@material-ui/icons/Close";
 
 import Attribution from "./Attribution";
-import zoomLogo from "../images/zoom-logo.svg";
+import ZoomCredentials from "./ZoomCredentials";
 
-const InfoModal = ({
-  title,
-  message,
-  meetingId,
-  meetingPass,
-  open,
-  setOpen
-}) => {
+const InfoModal = ({ title, message, meeting, open, setOpen }) => {
   const handleClose = e => {
     if (e.target.matches(".modal") || e.target.matches(".modal__close")) {
       setOpen(false);
@@ -35,22 +28,11 @@ const InfoModal = ({
                 </div>
               </>
             )}
-            {meetingId && (
-              <div className="modal__credentials">
-                <img
-                  className="modal__zoom"
-                  src={zoomLogo}
-                  alt="Zoom Meeting Credentials"
-                />
-                <p>
-                  <strong>Meeting ID: </strong>
-                  {meetingId}
-                  <br />
-                  <br />
-                  <strong>Password: </strong>
-                  {meetingPass}
-                </p>
-              </div>
+            {meeting && (
+              <ZoomCredentials
+                className="modal__zoom-credentials"
+                meeting={meeting}
+              />
             )}
             <div className="modal__attribution">
               <Attribution />

@@ -1,6 +1,6 @@
 .invitation
   color: #fff
-  
+
   &__text
     position: relative
     top: 10em
@@ -23,11 +23,27 @@
     left: 0
     text-align: center
     width: 100%
+    overflow: hidden
+    // padding: 50px 0
+    padding-top: 30px
 
   &__countdown
     margin-top: 20px
     padding-bottom: 3em
     max-width: 100%
+    transition: all 500ms
+    position: absolute
+    bottom: 0
+    left: 0
+    right: 0
+    margin: 0 auto
+
+    &--exit-active
+      animation-name: popOutDown
+      animation-duration: 500ms
+
+    &--exit-done
+      opacity: 0
 
     &__wrapper
       display: flex
@@ -50,10 +66,64 @@
 
   &__date
     font-size: 1.2em
+    transition: all 300ms
+
+  &__zoom-credentials
+    @include glass-blur
+    box-shadow: 10px 10px 40px rgba(0, 0, 0, .2)
+    display: table
+    padding: 25px 5vmax 40px 5vmax
+    margin: 15px auto
+    border-radius: 20px
+    font-size: 1.1em
+    transform: translateY(100vh)
+    position: relative
+
+    &--enter-active
+      animation-name: popInUp
+      animation-duration: 500ms
+      animation-delay: 1000ms
+
+    &--enter-done
+      transform: none
+
+    &--empty
+      padding: 15px
+      max-width: 500px
+
+  &__zoom-pulse
+    position: absolute
+    top: 20px
+    right: 15px
+
+@keyframes popInUp
+  0%
+    transform: translateY(120%)
+  50%
+    transform: translateY(-15px)
+  100%
+    transform: translateY(0)
+
+@keyframes popOutDown
+  0%
+    transform: translateY(0)
+    opacity: 1
+  50%
+    transform: translateY(-15px)
+    opacity: 1
+  75%
+    transform: translateY(100vh)
+    opacity: 1
+  100%
+    transform: translateY(100vh)
+    opacity: 0
 
 @media screen and (max-width: $mobileBreakpoint2 + 'px')
   .invitation
     font-size: 12px
+
+    &__counter-container
+      padding-bottom: 10px
 
     &__countdown
       font-size: 9px
@@ -67,9 +137,19 @@
         & li
           margin-right: 0
 
+    &__date
+      margin-bottom: 20px
+      font-size: 1.8em
+
+    &__zoom-credentials
+      width: 90%
+
 @media screen and (max-width: $mobileBreakpoint1 + 'px')
   .invitation
     font-size: 11px
 
     &__countdown__value
       font-size: 5em
+
+    &__zoom-credentials
+      font-size: 1.5em

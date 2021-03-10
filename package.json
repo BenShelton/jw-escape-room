@@ -41,6 +41,7 @@
     "react-simple-drag-n-drop": "^1.0.4",
     "react-transition-group": "^4.4.1",
     "string-to-color": "^2.2.2",
+    "styled-components": "^5.2.1",
     "web-vitals": "^0.2.4",
     "wpapi": "^1.2.1"
   },

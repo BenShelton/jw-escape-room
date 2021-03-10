@@ -4,18 +4,27 @@ import moment from "moment";
 import { Helmet } from "react-helmet";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { CSSTransition } from "react-transition-group";
 import ReactGA from "react-ga";
 
 // import "normalize.css/normalize.css";
 import "../styles/main.sass";
-import { render, isVideo } from "../helpers/utils";
+import { render } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 import EscapeRoom from "./EscapeRoom";
 import EscapeRoomShowcase from "./EscapeRoomShowcase";
 import EscapeRoomInformation from "./EscapeRoomInformation";
+import ZoomCredentials from "./ZoomCredentials";
+import Pulse from "./Pulse";
 
-const Counter = ({ days, hours, minutes, seconds, completed }) => (
+const Counter = ({ days, hours, minutes, seconds, completed, game }) => (
   <div className="invitation__countdown">
+    <p className="invitation__date">
+      {game &&
+        moment
+          .unix(game.scheduledTime.seconds)
+          .format("MMMM Do, YYYY [at] h:mm a")}
+    </p>
     <ul className="invitation__countdown__wrapper">
       <li>
         <p className="invitation__countdown__value">{zeroPad(days)}</p>
@@ -37,28 +46,66 @@ const Counter = ({ days, hours, minutes, seconds, completed }) => (
   </div>
 );
 
-const Invitation = ({ game, room, msg }) => (
-  <div className="invitation">
-    <div className="invitation__text">
-      <h2>You Are Invited To</h2>
-      <h1>{render(room.title)}</h1>
-      <h2>Hosted by {`${game.host.firstName} ${game.host.lastName}`}</h2>
-    </div>
+const Invitation = ({ game, room, msg }) => {
+  const [passedStartTime, setPassedStartTime] = useState(false);
 
-    <div className="invitation__counter-container">
-      <p className="invitation__date">
-        {game &&
-          moment
-            .unix(game.scheduledTime.seconds)
-            .format("MMMM Do, YYYY [at] h:mm a")}
-      </p>
-      <Countdown
-        date={moment.unix(game.scheduledTime.seconds).toDate()}
-        renderer={props => <Counter {...props} />}
-      />
+  return (
+    <div className="invitation">
+      <div className="invitation__text">
+        <h2>You Are Invited To</h2>
+        <h1>{render(room.title)}</h1>
+        <h2>Hosted by {`${game.host.firstName} ${game.host.lastName}`}</h2>
+      </div>
+
+      <div className="invitation__counter-container">
+        <CSSTransition
+          timeout={475}
+          in={passedStartTime === false}
+          unmountOnExit={true}
+          classNames="invitation__countdown-"
+          appear
+        >
+          <Countdown
+            date={
+              process.env.REACT_APP_FB_ENV === "development"
+                ? moment()
+                    .add("5", "seconds")
+                    .toDate()
+                : moment.unix(game.scheduledTime.seconds).toDate()
+            }
+            renderer={props => <Counter game={game} {...props} />}
+            onComplete={() => setPassedStartTime(true)}
+          />
+        </CSSTransition>
+        <CSSTransition
+          timeout={1450}
+          in={passedStartTime}
+          classNames="invitation__zoom-credentials-"
+        >
+          <div
+            className={`invitation__zoom-credentials ${
+              !game.meeting.id ? "invitation__zoom-credentials--empty" : ""
+            }`}
+          >
+            {game.meeting.id && (
+              <>
+                <Pulse type="active" className="invitation__zoom-pulse" />
+                <ZoomCredentials meeting={game.meeting} />
+              </>
+            )}
+            {!game.meeting.id && (
+              <p>
+                Contact your host{" "}
+                {`${game.host.firstName} ${game.host.lastName}`} for information
+                on how to connect to the team.
+              </p>
+            )}
+          </div>
+        </CSSTransition>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   const [name, setName] = useState("");
@@ -171,19 +218,8 @@ const EscapeRoomLobby = props => {
     console.log(`Deciding screen on stage ${stage}`);
     switch (stage) {
       case "dormant":
-        if (moment().isAfter(moment.unix(game.scheduledTime.seconds))) {
-          return setScreen("enter");
-          // scheduled time has passed, ask for name
-        }
-        if (entered === true) {
-          return setScreen("waiting:host");
-        }
         return setScreen("invite");
       case "collecting":
-        if (entered === true) {
-          // player already chose name
-          return setScreen("waiting:host");
-        }
         return setScreen("enter");
       case "dividing":
         return setScreen("waiting:teams");
