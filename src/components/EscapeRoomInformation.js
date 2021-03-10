@@ -62,8 +62,7 @@ const EscapeRoomInformation = () => {
       <InfoModal
         title={`A message from ${game.host.firstName} ${game.host.lastName}`}
         message={game.message}
-        meetingId={game.meeting.id}
-        meetingPass={game.meeting.password}
+        meeting={game.meeting}
         open={openModal}
         setOpen={setOpenModal}
       ></InfoModal>
