@@ -49,6 +49,13 @@ const Counter = ({ days, hours, minutes, seconds, completed, game }) => (
 const Invitation = ({ game, room, msg }) => {
   const [passedStartTime, setPassedStartTime] = useState(false);
 
+  useEffect(() => {
+    // assure that the time has not already passed on load
+    if (moment().isAfter(moment.unix(game.scheduledTime.seconds))) {
+      setPassedStartTime(true);
+    }
+  }, []);
+
   return (
     <div className="invitation">
       <div className="invitation__text">
@@ -67,11 +74,12 @@ const Invitation = ({ game, room, msg }) => {
         >
           <Countdown
             date={
-              process.env.REACT_APP_FB_ENV === "development"
-                ? moment()
-                    .add("5", "seconds")
-                    .toDate()
-                : moment.unix(game.scheduledTime.seconds).toDate()
+              // process.env.REACT_APP_FB_ENV === "development"
+              //   ? moment()
+              //       .add("5", "seconds")
+              //       .toDate()
+              //   :
+              moment.unix(game.scheduledTime.seconds).toDate()
             }
             renderer={props => <Counter game={game} {...props} />}
             onComplete={() => setPassedStartTime(true)}
@@ -119,7 +127,7 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (name === "") return;
-    await enterPlayer(name);
+    enterPlayer(name); // removed await to help with responsiveness after clicking button
     setEntered(true);
     setScreen("waiting:host");
   };
@@ -128,12 +136,13 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
     <div className="game__screen__enter">
       <div className="game__screen__enter__inner">
         <form className="jw" noValidate onSubmit={handleSubmit}>
-          <label htmlFor="player-name-input">enter your name</label>
+          <label htmlFor="player-name-input">Enter your name</label>
           <p className="game__screen__enter__hint">
             please use your same name you are under in the meeting
           </p>
           <div className="game__screen__enter__input-row">
             <input
+              autoComplete="name"
               value={name}
               onChange={e => setName(e.target.value)}
               id="player-name-input"
@@ -144,7 +153,7 @@ const Enter = ({ currentPlayer, enterPlayer, setEntered, setScreen }) => {
               className={`submit ${name.length ? "submit--show" : ""}`}
               type="submit"
             >
-              <ChevronRightIcon style={{ color: "#00dbff" }} />
+              <ChevronRightIcon style={{ color: "#9c27b0" }} />
             </button>
           </div>
         </form>
@@ -159,11 +168,16 @@ const Waiting = ({ text, subtext, children }) => (
       <p className="game__screen__waiting__heading">
         {text || "waiting for host"}
       </p>
-      {subtext && (
+      {subtext ? (
         <p
           className="game__screen__waiting__subtext"
           dangerouslySetInnerHTML={{ __html: subtext }}
         ></p>
+      ) : (
+        <p className="game__screen__waiting__subtext">
+          Please keep this window open, do not use the back button or refresh
+          the page.
+        </p>
       )}
       {children}
       <CircularProgress style={{ color: "#fff" }} />
@@ -175,7 +189,7 @@ const Completed = () => {
   return (
     <Waiting
       text="Great Job!"
-      subtext="The other teams are still finishing up. Sit tight, the host will reveal the winner soon!"
+      subtext="The other teams are still finishing up. Sit tight, please keep this window open, the host will reveal the winner soon!"
     ></Waiting>
   );
 };
@@ -237,7 +251,6 @@ const EscapeRoomLobby = props => {
   }, [stage]);
 
   const getScreen = screenToRender => {
-    // OPTIMIZE: add countdown animation screen before start https://codepen.io/nw/pen/zvQVWM
     console.log(`Rendering screen ${screenToRender}`);
     switch (screenToRender) {
       case "invite":

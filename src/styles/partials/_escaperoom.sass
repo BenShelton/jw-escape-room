@@ -105,10 +105,16 @@ $headerHeight: 125px
     text-transform: lowercase
     transition: all 300ms
     font-weight: bold
-    height: 175px
-    max-width: 175px
-    width: 175px
+    height: 200px
+    max-width: 200px
+    width: 200px
     position: relative
+    border-radius: 100%
+
+    &:hover
+      height: 210px
+      max-width: 210px
+      width: 210px
 
     &__label
       margin-right: 5px
@@ -125,37 +131,68 @@ $headerHeight: 125px
       &:disabled
         background-color: #999
 
+    &--positive
+      background: #9ee5b8
+
     &--unlock
       flex-grow: 1
       background-color: $primaryBlue
       color: darken($primaryBlue, 40)
-      border-top-left-radius: 100%
-      margin-left: auto
+      position: absolute
+      right: -50px
+      bottom: -50px
+      display: flex
+      transition: transform 500ms, height 300ms, width 300ms, max-width 300ms
 
       &:hover
         background-color: darken($primaryBlue, 8)
 
       #{$self}__button-inner
-        display: table
-        position: absolute
-        right: 30px
-        bottom: auto
+        margin: auto
+        position: relative
+        right: 15px
+        bottom: 1em
+        transition: transform .6s
+
+      &--exit
+
+        .escaperoom__button-inner
+          transform: rotate(0deg)
+
+      &--exit-active
+
+        .escaperoom__button-inner
+          transform: rotate(90deg)
+
+      &--enter
+
+        .escaperoom__button-inner
+          transform: rotate(90deg)
+
+      &--enter-active
+
+        .escaperoom__button-inner
+          transform: none
 
     &--clue
       // width: 300px
       // max-width: 35%
       background-color: $primaryPurple
       color: darken($primaryPurple, 30)
-      border-top-right-radius: 100%
+      position: absolute
+      left: -50px
+      bottom: -50px
+      display: flex
 
       &:hover
         background-color: darken($primaryPurple, 8)
 
       #{$self}__button-inner
-        display: table
-        position: absolute
-        left: 30px
-        bottom: auto
+        margin: auto
+        position: relative
+        left: 25px
+        bottom: 1em
+
 
   &__questions
     color: #fff
@@ -183,8 +220,8 @@ $headerHeight: 125px
       margin-bottom: 10px
 
     &__nonleader
+      @include glass-blur
       padding: 15px
-      background-color: rgba(0, 0,0,0.7)
       border-radius: 3px
 
       ol
@@ -197,11 +234,74 @@ $headerHeight: 125px
         font-weight: 500
         margin-bottom: 10px
 
+.escaperoom__questions
+  transition: all 500ms
+
+.escaperoom__challenge__content
+  transition: all 500ms
+
+.escaperoom__challenge__content--exit
+  opacity: 1
+
+.escaperoom__challenge__content--exit-active
+  opacity: 0
+  transform: translateX(-20px)
+
+.escaperoom__challenge__content--enter
+  opacity: 0
+  transform: translateX(20px)
+
+.escaperoom__challenge__content--enter-active
+  opacity: 1
+  transform: none
+
+// ==============================
+
+.escaperoom__questions
+  transition: all 600ms
+  transition-delay: 150ms
+
+.escaperoom__questions--exit
+  opacity: 1
+
+.escaperoom__questions--exit-active
+  opacity: 0
+  transform: translateX(-20px)
+
+.escaperoom__questions--enter
+  opacity: 0
+  transform: translateX(20px)
+
+.escaperoom__questions--enter-active
+  opacity: 1
+  transform: translateX(0px)
+
 @media screen and (max-width: $mobileBreakpoint2 + 'px')
   .escaperoom
     font-size: 15px
+    $self: &
 
     &__button
-      height: 125px
-      max-width: 125px
-      width: 125px
+      height: 165px
+      max-width: 165px
+      width: 165px
+
+      &:hover
+        height: 165px
+        max-width: 165px
+        width: 165px
+
+      &__label
+        font-size: 0.9em
+
+      &--unlock
+
+        #{$self}__button-inner
+          right: 10px
+          bottom: 25px
+
+      &--clue
+
+        #{$self}__button-inner
+          left: 25px
+          bottom: 25px

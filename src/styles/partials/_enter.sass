@@ -6,6 +6,7 @@
 
   &__inner
     text-align: center
+    padding: 0 35px
 
     label
       color: #fff
@@ -17,24 +18,29 @@
   &__hint
     color: #fff
     margin-bottom: 15px
+    text-transform: lowercase
 
   &__input-row
-    display: flex
-    align-items: center
-    justify-content: center
+    // display: flex
+    // align-items: center
+    // justify-content: center
     position: relative
 
     input
       font-size: 2em
       text-align: center
-      display: block
-      margin-right: 10px
-      position: relative
+      display: table
+      // margin-right: 10px
+      // position: relative
+      margin: 0 auto !important
       z-index: 2
-      color: #444
+      color: #9c27b0
 
     & .submit
-      position: absolute
+      // position: absolute
+      position: relative
+      top: -3em
+      margin: 0 auto
       height: 2.5em
       width: 2.5em
       text-align: center
@@ -59,3 +65,13 @@
           right: 0
           bottom: 0
           margin: auto
+
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
+  .game__screen__enter
+
+    .submit
+      height: 4em
+      width: 4em
+
+      &--show
+        transform: translateY(4.2em)

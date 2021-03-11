@@ -4,6 +4,8 @@ import moment from "moment";
 import SearchIcon from "@material-ui/icons/Search";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { Helmet } from "react-helmet";
+import { CSSTransition, SwitchTransition } from "react-transition-group";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import "animate.css/animate.min.css";
 
 import { render } from "../helpers/utils";
@@ -67,6 +69,10 @@ const EscapeRoom = () => {
   const [challenge, setChallenge] = useState(null);
   const [gameEndtime, setGameEndtime] = useState();
 
+  const formRef = useRef();
+
+  const handleUnlock = () => formRef.current.dispatchEvent(new Event("submit")); // use dispatch event in order to call onSubmit handler
+
   useEffect(() => {
     // calculate end time with start time and clues
     const twoMinuteDeductions = usedClues.length * 120; // 120 seconds for 2 minutes each clue
@@ -80,13 +86,16 @@ const EscapeRoom = () => {
     if (!playingChallenge) return;
     switch (playingChallenge) {
       case "intro":
-        setChallenge(room.intro);
+        setChallenge({ id: "intro", ...room.intro });
         break;
       case "outro":
-        setChallenge(room.outro);
+        setChallenge({ id: "outro", ...room.outro });
         break;
       default:
-        setChallenge(room.challenges[playingChallenge]);
+        setChallenge({
+          id: playingChallenge,
+          ...room.challenges[playingChallenge]
+        });
     }
     setLoadingChallenge(false);
   }, [playingChallenge]);
@@ -141,10 +150,18 @@ const EscapeRoom = () => {
     setCompletedGame(true);
   };
 
-  const getChallengeTracker = () =>
-    `${room.challengeMap.indexOf(playingChallenge) + 1} / ${
-      room.challengeMap.length
-    }`;
+  const getChallengeTracker = () => {
+    switch (playingChallenge) {
+      case "intro":
+        return "Introduction";
+      case "outro":
+        return "Complete";
+      default:
+        return `${room.challengeMap.indexOf(playingChallenge) + 1} / ${
+          room.challengeMap.length
+        }`;
+    }
+  };
 
   return (
     <div className="escaperoom">
@@ -160,8 +177,6 @@ const EscapeRoom = () => {
         <div className="escaperoom__header__timer">
           {gameEndtime && (
             <Countdown
-              onPause={() => console.log("COUNTER PAUSED")}
-              // controlled={Boolean(currentTeam.endTime)}
               date={moment.unix(gameEndtime).toDate()}
               renderer={props => <Timer {...props} />}
               overtime={true}
@@ -171,103 +186,167 @@ const EscapeRoom = () => {
       </header>
 
       <div className="escaperoom__challenge-container">
-        {!loadingChallenge && (
-          <div className="escaperoom__challenge">
-            <article
-              className="escaperoom__challenge__content"
-              dangerouslySetInnerHTML={{ __html: challenge.content }}
-            ></article>
-
-            {usedClues.includes(playingChallenge) && (
-              <p
-                className="escaperoom__clue animate__animated animate__backInDown"
-                dangerouslySetInnerHTML={{ __html: challenge.clue }}
-              ></p>
-            )}
-
-            <div id="escaperoom-questions" className="escaperoom__questions">
-              {leader.id === currentPlayer.uid && (
-                <form className="jw" onSubmit={handleSubmit}>
-                  {challenge.questions &&
-                    challenge.questions.map(({ question, hint }, index) => (
-                      <div key={index} className="escaperoom__questions__row">
-                        <label>{question}</label>
-                        <input
-                          name={inputName(index)}
-                          type="text"
-                          className="full-width"
-                        />
-                        <p dangerouslySetInnerHTML={{ __html: hint }}></p>
-                      </div>
-                    ))}
-                  <div className="escaperoom__controls">
-                    {typeof playingChallenge === "number" && (
-                      <button
-                        type="button"
-                        onClick={handleClue}
-                        disabled={
-                          usedClues.includes(playingChallenge) &&
-                          challenge.clue !== ""
-                        }
-                        className="escaperoom__button escaperoom__button--clue"
-                      >
-                        <div class="escaperoom__button-inner">
-                          <span className="escaperoom__button__label">
-                            Get a Clue <br /> (-2 min)
-                          </span>
-                          <SearchIcon
-                            className="escaperoom__button__icon"
-                            fontSize="small"
-                          />
-                        </div>
-                      </button>
-                    )}
-                    <button
-                      type="submit"
-                      className="escaperoom__button escaperoom__button--unlock"
-                    >
-                      <div class="escaperoom__button-inner">
-                        <span className="escaperoom__button__label">
-                          {typeof playingChallenge === "number"
-                            ? "Unlock"
-                            : "Next"}
-                        </span>
-                        {typeof playingChallenge === "number" && (
-                          <LockOpenIcon
-                            className="escaperoom__button__icon"
-                            fontSize="small"
-                          />
-                        )}
-                      </div>
-                    </button>
-                  </div>
-                </form>
+        <div className="escaperoom__challenge">
+          {challenge && (
+            <>
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={challenge.id}
+                  addEndListener={(node, done) =>
+                    node.addEventListener("transitionend", done, false)
+                  }
+                  classNames="escaperoom__challenge__content-"
+                >
+                  <article
+                    className="escaperoom__challenge__content"
+                    dangerouslySetInnerHTML={{ __html: challenge.content }}
+                  ></article>
+                </CSSTransition>
+              </SwitchTransition>
+              {usedClues.includes(playingChallenge) && (
+                <p
+                  className="escaperoom__clue animate__animated animate__backInDown"
+                  dangerouslySetInnerHTML={{ __html: challenge.clue }}
+                ></p>
               )}
-              {leader.id !== currentPlayer.uid && playingChallenge === "outro" && (
-                <div className="escaperoom__controls">
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={challenge.id}
+                  addEndListener={(node, done) =>
+                    node.addEventListener("transitionend", done, false)
+                  }
+                  timeout={10000}
+                  classNames="escaperoom__questions-"
+                >
+                  <div
+                    id="escaperoom-questions"
+                    className="escaperoom__questions"
+                  >
+                    {leader.id === currentPlayer.uid && (
+                      <form
+                        className="jw"
+                        onSubmit={handleSubmit}
+                        ref={formRef}
+                      >
+                        {challenge.questions &&
+                          challenge.questions.map(
+                            ({ question, hint }, index) => (
+                              <div
+                                key={index}
+                                className="escaperoom__questions__row"
+                              >
+                                <label>{question}</label>
+                                <input
+                                  autoFocus
+                                  autoComplete="off"
+                                  autoFill="off"
+                                  name={inputName(index)}
+                                  type="text"
+                                  className="full-width"
+                                />
+                                <p
+                                  dangerouslySetInnerHTML={{ __html: hint }}
+                                ></p>
+                              </div>
+                            )
+                          )}
+                      </form>
+                    )}
+                    {leader.id !== currentPlayer.uid && challenge.questions && (
+                      <div className="escaperoom__questions__nonleader">
+                        <h3>
+                          Help your team answer the following question
+                          {challenge.questions.length > 1 && "s"}:
+                        </h3>
+                        <ol>
+                          {challenge.questions.map(({ question }) => (
+                            <li>{question}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+                </CSSTransition>
+              </SwitchTransition>
+            </>
+          )}
+        </div>
+        {leader.id === currentPlayer.uid && (
+          <div className="escaperoom__controls">
+            {typeof playingChallenge === "number" && (
+              <button
+                type="button"
+                onClick={handleClue}
+                disabled={
+                  usedClues.includes(playingChallenge) && challenge.clue !== ""
+                }
+                className="escaperoom__button escaperoom__button--clue"
+              >
+                <div class="escaperoom__button-inner">
+                  <span className="escaperoom__button__label">
+                    Get a Clue <br /> (-2 min)
+                  </span>
+                  <SearchIcon
+                    className="escaperoom__button__icon"
+                    fontSize="small"
+                  />
+                </div>
+              </button>
+            )}
+            {challenge && (
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={challenge.id}
+                  addEndListener={(node, done) =>
+                    node.addEventListener("transitionend", done, false)
+                  }
+                  classNames="escaperoom__button--unlock-"
+                >
                   <button
                     type="submit"
                     className="escaperoom__button escaperoom__button--unlock"
-                    onClick={handleNonLeaderFinish}
+                    onClick={handleUnlock}
                   >
-                    <span className="escaperoom__button__label">Finish</span>
+                    <div className="escaperoom__button-inner">
+                      <span className="escaperoom__button__label">
+                        {typeof playingChallenge === "number"
+                          ? "Unlock"
+                          : "Next"}
+                      </span>
+                      {typeof playingChallenge === "number" ? (
+                        <LockOpenIcon
+                          className="escaperoom__button__icon"
+                          fontSize="small"
+                        />
+                      ) : (
+                        <NavigateNextIcon
+                          className="escaperoom__button__icon"
+                          fontSize="small"
+                        />
+                      )}
+                    </div>
                   </button>
-                </div>
-              )}
-              {leader.id !== currentPlayer.uid && challenge.questions && (
-                <div className="escaperoom__questions__nonleader">
-                  <h3>
-                    Help your team answer the following question
-                    {challenge.questions.length > 1 && "s"}:
-                  </h3>
-                  <ol>
-                    {challenge.questions.map(({ question }) => (
-                      <li>{question}</li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-            </div>
+                </CSSTransition>
+              </SwitchTransition>
+            )}
+          </div>
+        )}
+        {leader.id !== currentPlayer.uid && playingChallenge === "outro" && (
+          <div className="escaperoom__controls">
+            <button
+              type="button"
+              className="escaperoom__button escaperoom__button--unlock escaperoom__button--positive"
+              onClick={handleNonLeaderFinish}
+            >
+              <div className="escaperoom__button-inner">
+                <span className="escaperoom__button__label">Finish</span>
+
+                <NavigateNextIcon
+                  className="escaperoom__button__icon"
+                  fontSize="small"
+                />
+              </div>
+            </button>
           </div>
         )}
       </div>
