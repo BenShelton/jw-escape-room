@@ -4,7 +4,8 @@ import teamNames from "../data/teamNames.json";
 
 export default class NamePicker {
   constructor(options = {}) {
-    this._names = [...teamNames];
+    this._primaryNames = [...teamNames.primary];
+    this._secondaryNames = [...teamNames.secondary];
     this._options = _.defaults(options, {
       prefix: "",
       suffix: ""
@@ -12,18 +13,21 @@ export default class NamePicker {
   }
 
   getRemainingNames() {
-    return this._names;
+    return [...this._primaryNames, ...this._secondaryNames];
   }
 
   getRandom() {
+    const arr = this._primaryNames.length
+      ? this._primaryNames
+      : this._secondaryNames;
     return _.trim(
-      `${this._options.prefix} ${_.pullAt(this._names, this._randomIndex())} ${
+      `${this._options.prefix} ${_.pullAt(arr, this._randomIndex(arr))} ${
         this._options.suffix
       }`
     );
   }
 
-  _randomIndex() {
-    return _.random(0, this._names.length - 1);
+  _randomIndex(arr) {
+    return _.random(0, arr.length - 1);
   }
 }

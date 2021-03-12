@@ -1,19 +1,37 @@
-[
-  "Levites",
-  "Ephraimites",
-  "Zebulunites",
-  "Simeonites",
-  "Gadites",
-  "Philistines",
-  "Nephalim",
-  "Naphtalites",
-  "Reubenites",
-  "Canaanites",
-  "Manassites",
-  "Benjamites",
-  "Danites",
-  "Disciples",
-  "Jebusites",
-  "Isrealites",
-  "Psalmists"
-]
+{
+  "primary": [
+    "Levites",
+    "Ephraimites",
+    "Zebulunites",
+    "Simeonites",
+    "Gadites",
+    "Philistines",
+    "Nephalim",
+    "Naphtalites",
+    "Reubenites",
+    "Canaanites",
+    "Manassites",
+    "Benjamites",
+    "Danites",
+    "Disciples",
+    "Jebusites",
+    "Isrealites",
+    "Psalmists",
+    "Hittites",
+    "Midianites",
+    "Judahites"
+  ],
+  "secondary": [
+    "Ludites",
+    "Anamites",
+    "Temanites",
+    "Kohathites",
+    "Ludites",
+    "Shumathites",
+    "Ludites",
+    "Puthites",
+    "Lehabites",
+    "Manahethites",
+    "Zorathites"
+  ]
+}
