@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -16,6 +16,7 @@ import Box from "@material-ui/core/Box";
 import { isEmpty } from "lodash";
 
 import LoginBase from "./LoginBase";
+import { auth } from "../firebase";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const RegistrationPage = () => {
+const RegistrationPage = ({ location }) => {
   const classes = useStyles();
 
   const firstNameRef = useRef();
@@ -51,6 +52,15 @@ const RegistrationPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
+
+  const referralCodeParam = new URLSearchParams(location.search).get(
+    "referralcode"
+  );
+
+  useLayoutEffect(() => {
+    // populate code from query param
+    referralCodeRef.current.value = referralCodeParam || "";
+  }, []);
 
   const handleSubmit = async e => {
     // OPTIMIZE: implement validate.js

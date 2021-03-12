@@ -52,7 +52,7 @@ const EscapeRoomSignoff = ({
           <p>
             Create an account at{" "}
             <a
-              href={`https://${process.env.REACT_APP_BASE_URL}/register?referral=${game.host.referralCode}`}
+              href={`https://${process.env.REACT_APP_BASE_URL}/register?referralcode=${game.host.referralCode}`}
               target="_blank"
             >
               jwzoom.games/register
