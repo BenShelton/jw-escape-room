@@ -3,13 +3,16 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import Lottie from "lottie-react";
 import moment from "moment";
 import "animate.css/animate.min.css";
+import { CSSTransition } from "react-transition-group";
 
+import CheckIcon from "@material-ui/icons/Check";
 import drumrollSound from "../sounds/drumroll.mp3";
 import winSound from "../sounds/win.mp3";
 import fireworksAnimation from "../data/lottie/fireworks.json";
 import confettiAnimation from "../data/lottie/confetti.json";
 import goldMedalAnimation from "../data/lottie/goldMedal.json";
 import { useGame } from "../contexts/EscapeRoomContext";
+import EscapeRoomSignoff from "./EscapeRoomSignoff";
 
 const Rank = ({ index }) => {
   switch (index) {
@@ -55,12 +58,22 @@ const ShowcaseStats = ({ team }) => {
 };
 
 const EscapeRoomShowcase = () => {
-  const { finalRankings, players, teams } = useGame();
+  const { finalRankings, currentPlayer, players, teams, game } = useGame();
 
   const [pedestal, setPedestal] = useState([]);
   const [playerMap, setPlayerMap] = useState();
+  const [revealShowcase, setRevealShowcase] = useState(false);
+  const [mountAnimation, setMountAnimation] = useState(true);
+
+  const finishButton = useRef();
+
+  const handleFinishButton = () => setRevealShowcase(true);
 
   useEffect(() => {
+    // show button after 20 seconds
+    setTimeout(() => {
+      finishButton.current.classList.add("showcase__finish-button--show");
+    }, 19000);
     // enter rankings
     const rankEntries = Object.entries(finalRankings);
     console.log("RANK ENTRIES", rankEntries);
@@ -114,25 +127,6 @@ const EscapeRoomShowcase = () => {
     });
     setPlayerMap(tempPlayerMap);
   }, []);
-
-  // const [rankings, setRankings] = useState([
-  //   {
-  //     name: "The Isrealites",
-  //     endTime: { seconds: 1612193663 }, // 35 minutes
-  //     usedClues: [16, 19], // -4 minutes
-  //     leader: "Bill"
-  //   },
-  //   {
-  //     name: "The Jebusites",
-  //     endTime: { seconds: 1612193303 }, // 29 minutes
-  //     usedClues: [16] // -2 minutes
-  //   },
-  //   {
-  //     name: "The Levites",
-  //     endTime: { seconds: 1612194263 }, // 45 minutes
-  //     usedClues: []
-  //   }
-  // ]);
 
   const [announceWinner, setAnnounceWinner] = useState(false);
 
@@ -226,8 +220,19 @@ const EscapeRoomShowcase = () => {
   };
 
   useLayoutEffect(() => {
-    runAnimation();
+    if (mountAnimation) {
+      runAnimation();
+    }
   }, []);
+
+  useEffect(() => {
+    if (revealShowcase) {
+      setTimeout(() => {
+        // unmount other components after animation
+        setMountAnimation(false);
+      }, 1500);
+    }
+  }, [revealShowcase]);
 
   const handlePlayersToggle = (e, i) => {
     const { current } = mapIndexToPlayersRef(i);
@@ -243,95 +248,122 @@ const EscapeRoomShowcase = () => {
   };
 
   return (
-    <div className="showcase">
-      <div ref={overlayRef} className="showcase__overlay"></div>
-      <div className="showcase__lottie-container">
-        {announceWinner && (
-          <>
-            <Lottie
-              className="showcase__fireworks"
-              loop={true}
-              animationData={fireworksAnimation}
-            />
-            <Lottie
-              className="showcase__confetti showcase__confetti--left"
-              loop={false}
-              animationData={confettiAnimation}
-            />
-            <Lottie
-              className="showcase__confetti showcase__confetti--right"
-              loop={false}
-              animationData={confettiAnimation}
-            />
-          </>
-        )}
-      </div>
-      <div className="showcase__inner">
-        <ul className="showcase__top-three">
-          {pedestal.length &&
-            pedestal.map((team, i) => (
-              <li
-                className={`showcase__winners showcase__winners--${mapIndexToClass(
-                  i
-                )}`}
-                ref={mapIndexToRef(i)}
-                key={i}
-              >
-                {console.log("TEAM OBJ", team)}
-                {i === 0 && (
-                  <Lottie
-                    lottieRef={medalRef}
-                    className="showcase__medal"
-                    loop={true}
-                    animationData={goldMedalAnimation}
-                  />
-                )}
-                <div className="showcase__team-info">
-                  <p className="showcase__rank">
-                    <Rank index={i} /> Place
-                  </p>
-                  <p
-                    className={`showcase__name ${
-                      announceWinner ? "animate__animated animate__tada" : ""
-                    }`}
+    <>
+      {mountAnimation && (
+        <div className="showcase">
+          <div ref={overlayRef} className="showcase__overlay"></div>
+          <div className="showcase__lottie-container">
+            {announceWinner && (
+              <>
+                <Lottie
+                  className="showcase__fireworks"
+                  loop={true}
+                  animationData={fireworksAnimation}
+                />
+                <Lottie
+                  className="showcase__confetti showcase__confetti--left"
+                  loop={false}
+                  animationData={confettiAnimation}
+                />
+                <Lottie
+                  className="showcase__confetti showcase__confetti--right"
+                  loop={false}
+                  animationData={confettiAnimation}
+                />
+              </>
+            )}
+          </div>
+          <div className="showcase__inner">
+            <ul className="showcase__top-three">
+              {pedestal.length &&
+                pedestal.map((team, i) => (
+                  <li
+                    className={`showcase__winners showcase__winners--${mapIndexToClass(
+                      i
+                    )}`}
+                    ref={mapIndexToRef(i)}
+                    key={i}
                   >
-                    {team.name}
-                  </p>
-                  <p className="showcase__stats">
-                    <ShowcaseStats team={team} />
-                  </p>
-                  <p className="showcase__leader">
-                    Led by{" "}
-                    {team.mock !== true
-                      ? players[teams[team.id].leader].name
-                      : ""}
-                  </p>
-                  {i === 0 && (
-                    <>
-                      <button
-                        onClick={e => handlePlayersToggle(e, i)}
-                        className="showcase__players-toggle"
+                    {console.log("TEAM OBJ", team)}
+                    {i === 0 && (
+                      <Lottie
+                        lottieRef={medalRef}
+                        className="showcase__medal"
+                        loop={true}
+                        animationData={goldMedalAnimation}
+                      />
+                    )}
+                    <div className="showcase__team-info">
+                      <p className="showcase__rank">
+                        <Rank index={i} /> Place
+                      </p>
+                      <p
+                        className={`showcase__name ${
+                          announceWinner
+                            ? "animate__animated animate__tada"
+                            : ""
+                        }`}
                       >
-                        Show Players <KeyboardArrowDownIcon />
-                      </button>
-                      <ul
-                        ref={mapIndexToPlayersRef(i)}
-                        className="showcase__players"
-                      >
-                        {/* <li className="showcase__current-player">Julian</li> */}
-                        {playerMap[team.id].map(player => (
-                          <li key={player.id}>{player.name}</li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </div>
-              </li>
-            ))}
-        </ul>
-        <ul className="showcase_ranks"></ul>
-      </div>
-    </div>
+                        {team.name}
+                      </p>
+                      <p className="showcase__stats">
+                        <ShowcaseStats team={team} />
+                      </p>
+                      <p className="showcase__leader">
+                        Led by{" "}
+                        {team.mock !== true
+                          ? players[teams[team.id].leader].name
+                          : ""}
+                      </p>
+                      {i === 0 && (
+                        <>
+                          <button
+                            onClick={e => handlePlayersToggle(e, i)}
+                            className="showcase__players-toggle"
+                          >
+                            Show Players <KeyboardArrowDownIcon />
+                          </button>
+                          <ul
+                            ref={mapIndexToPlayersRef(i)}
+                            className="showcase__players"
+                          >
+                            {playerMap[team.id].map(player => (
+                              <li key={player.id}>{player.name}</li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                ))}
+            </ul>
+            <ul className="showcase_ranks"></ul>
+          </div>
+          <button
+            ref={finishButton}
+            onClick={handleFinishButton}
+            className="corner-button showcase__finish-button"
+          >
+            <div class="corner-button__button-inner">
+              <span className="corner-button__label">finish</span>
+              <CheckIcon className="corner-button__icon" fontSize="small" />
+            </div>
+          </button>
+        </div>
+      )}
+      <CSSTransition
+        in={revealShowcase}
+        timeout={1500}
+        classNames="showcase__signoff-"
+      >
+        <EscapeRoomSignoff
+          rankings={Object.entries(finalRankings)}
+          currentPlayer={currentPlayer}
+          game={game}
+          className="showcase__signoff"
+        />
+      </CSSTransition>
+    </>
   );
 };
 

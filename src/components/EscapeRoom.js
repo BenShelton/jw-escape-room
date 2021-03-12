@@ -166,7 +166,9 @@ const EscapeRoom = () => {
   return (
     <div className="escaperoom">
       <Helmet>
-        <title>{room && `${room.title} - ${getChallengeTracker()}`}</title>
+        <title>
+          {room && render(`${room.title} - ${getChallengeTracker()}`)}
+        </title>
       </Helmet>
       <header className="escaperoom__header">
         <div className="escaperoom__header__meta">
@@ -239,7 +241,7 @@ const EscapeRoom = () => {
                                 <input
                                   autoFocus
                                   autoComplete="off"
-                                  autoFill="off"
+                                  autofill="off"
                                   name={inputName(index)}
                                   type="text"
                                   className="full-width"
@@ -280,14 +282,14 @@ const EscapeRoom = () => {
                 disabled={
                   usedClues.includes(playingChallenge) && challenge.clue !== ""
                 }
-                className="escaperoom__button escaperoom__button--clue"
+                className="corner-button escaperoom__button escaperoom__button--clue"
               >
-                <div class="escaperoom__button-inner">
-                  <span className="escaperoom__button__label">
+                <div className="corner-button__button-inner">
+                  <span className="corner-button__label">
                     Get a Clue <br /> (-2 min)
                   </span>
                   <SearchIcon
-                    className="escaperoom__button__icon"
+                    className="corner-button__icon"
                     fontSize="small"
                   />
                 </div>
@@ -304,23 +306,23 @@ const EscapeRoom = () => {
                 >
                   <button
                     type="submit"
-                    className="escaperoom__button escaperoom__button--unlock"
+                    className="corner-button escaperoom__button escaperoom__button--unlock"
                     onClick={handleUnlock}
                   >
-                    <div className="escaperoom__button-inner">
-                      <span className="escaperoom__button__label">
+                    <div className="corner-button__button-inner">
+                      <span className="corner-button__label">
                         {typeof playingChallenge === "number"
                           ? "Unlock"
                           : "Next"}
                       </span>
                       {typeof playingChallenge === "number" ? (
                         <LockOpenIcon
-                          className="escaperoom__button__icon"
+                          className="corner-button__icon"
                           fontSize="small"
                         />
                       ) : (
                         <NavigateNextIcon
-                          className="escaperoom__button__icon"
+                          className="corner-button__icon"
                           fontSize="small"
                         />
                       )}
@@ -335,14 +337,14 @@ const EscapeRoom = () => {
           <div className="escaperoom__controls">
             <button
               type="button"
-              className="escaperoom__button escaperoom__button--unlock escaperoom__button--positive"
+              className="corner-button escaperoom__button escaperoom__button--unlock escaperoom__button--positive"
               onClick={handleNonLeaderFinish}
             >
-              <div className="escaperoom__button-inner">
-                <span className="escaperoom__button__label">Finish</span>
+              <div className="corner-button__button-inner">
+                <span className="corner-button__label">Finish</span>
 
                 <NavigateNextIcon
-                  className="escaperoom__button__icon"
+                  className="corner-button__icon"
                   fontSize="small"
                 />
               </div>

@@ -1,0 +1,48 @@
+.corner-button
+  @include reset-button
+  color: #fff
+  font-size: 1em
+  text-transform: lowercase
+  transition: all 300ms
+  font-weight: bold
+  height: 200px
+  max-width: 200px
+  width: 200px
+  position: relative
+  border-radius: 100%
+  background: #000
+
+  &:hover
+    height: 210px
+    max-width: 210px
+    width: 210px
+
+  &__label
+    margin-right: 5px
+
+  &__label, &__icon
+    display: inline-block
+    vertical-align: middle
+
+  &:disabled
+    background-color: #999
+    color: #666
+    cursor: no-drop
+
+@media screen and (max-width: $mobileBreakpoint2 + 'px')
+  .corner-button
+    font-size: 15px
+    $self: &
+
+    &__button
+      height: 165px
+      max-width: 165px
+      width: 165px
+
+      &:hover
+        height: 165px
+        max-width: 165px
+        width: 165px
+
+      &__label
+        font-size: 0.9em

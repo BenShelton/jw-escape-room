@@ -95,41 +95,7 @@ $headerHeight: 125px
     width: 100%
     transition: height 300ms
 
-    // &:hover
-    //   height: 50px
-
   &__button
-    @include reset-button
-    color: #fff
-    font-size: 1em
-    text-transform: lowercase
-    transition: all 300ms
-    font-weight: bold
-    height: 200px
-    max-width: 200px
-    width: 200px
-    position: relative
-    border-radius: 100%
-
-    &:hover
-      height: 210px
-      max-width: 210px
-      width: 210px
-
-    &__label
-      margin-right: 5px
-
-    &__label, &__icon
-      display: inline-block
-      vertical-align: middle
-
-    &:disabled
-      background-color: #999
-      color: #666
-      cursor: no-drop
-
-      &:disabled
-        background-color: #999
 
     &--positive
       background: #9ee5b8
@@ -147,7 +113,7 @@ $headerHeight: 125px
       &:hover
         background-color: darken($primaryBlue, 8)
 
-      #{$self}__button-inner
+      .corner-button__button-inner
         margin: auto
         position: relative
         right: 15px
@@ -156,22 +122,22 @@ $headerHeight: 125px
 
       &--exit
 
-        .escaperoom__button-inner
+        .corner-button__button-inner
           transform: rotate(0deg)
 
       &--exit-active
 
-        .escaperoom__button-inner
+        .corner-button__button-inner
           transform: rotate(90deg)
 
       &--enter
 
-        .escaperoom__button-inner
+        .corner-button__button-inner
           transform: rotate(90deg)
 
       &--enter-active
 
-        .escaperoom__button-inner
+        .corner-button__button-inner
           transform: none
 
     &--clue
@@ -187,12 +153,11 @@ $headerHeight: 125px
       &:hover
         background-color: darken($primaryPurple, 8)
 
-      #{$self}__button-inner
+      .corner-button__button-inner
         margin: auto
         position: relative
         left: 25px
         bottom: 1em
-
 
   &__questions
     color: #fff
@@ -278,30 +243,16 @@ $headerHeight: 125px
 
 @media screen and (max-width: $mobileBreakpoint2 + 'px')
   .escaperoom
-    font-size: 15px
     $self: &
 
-    &__button
-      height: 165px
-      max-width: 165px
-      width: 165px
+    &--unlock
 
-      &:hover
-        height: 165px
-        max-width: 165px
-        width: 165px
+      #{$self}__button-inner
+        right: 10px
+        bottom: 25px
 
-      &__label
-        font-size: 0.9em
+    &--clue
 
-      &--unlock
-
-        #{$self}__button-inner
-          right: 10px
-          bottom: 25px
-
-      &--clue
-
-        #{$self}__button-inner
-          left: 25px
-          bottom: 25px
+      #{$self}__button-inner
+        left: 25px
+        bottom: 25px
