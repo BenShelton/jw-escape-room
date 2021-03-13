@@ -8,12 +8,13 @@ const RankingsTable = ({ rankings, className = "", currentPlayer }) => (
   <table className={`rankings ${className}`}>
     {console.log("Rankings", rankings)}
     <tbody>
-      {rankings.map(([id, { netDuration, name, usedClues }], index) => (
+      {rankings.map(([rank, { netDuration, name, usedClues, id }], index) => (
         <tr
           className={
-            currentPlayer && currentPlayer.id === id ? "highlight" : ""
+            currentPlayer && currentPlayer.team === id ? "highlight" : ""
           }
         >
+          {console.log("team id " + id, currentPlayer)}
           {/* Rank */}
           <td>{index + 1}</td>
           <td>{name.replace(/^The/, "")}</td>
@@ -45,7 +46,11 @@ const EscapeRoomSignoff = ({
     </header>
     <article className="signoff__text">
       <h2>Rankings</h2>
-      <RankingsTable className="signoff__rankings" rankings={rankings} />
+      <RankingsTable
+        className="signoff__rankings"
+        rankings={rankings}
+        currentPlayer={currentPlayer}
+      />
       {currentPlayer && game && (
         <>
           <h2>Would you like to host your own Escape Room?</h2>
