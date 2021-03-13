@@ -124,6 +124,14 @@ class EscapeRoom {
     this._featuredImage = featuredImage;
   }
 
+  get videoBackground() {
+    return this.rawContent.acf.video_background;
+  }
+
+  set videoBackground(videoBackground) {
+    this.rawContent.acf.video_background = videoBackground;
+  }
+
   async getChallenges() {
     const endpoint = new URL(`${base}/challenges/`);
     endpoint.searchParams.append(

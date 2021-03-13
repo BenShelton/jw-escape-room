@@ -46,6 +46,7 @@ exports.updateEscapeRooms = functions.https.onRequest(async (req, res) => {
       content: Room.outro,
       background: Room.outroImage || null
     };
+    obj.videoBackground = Room.videoBackground || null;
     return obj;
   });
 

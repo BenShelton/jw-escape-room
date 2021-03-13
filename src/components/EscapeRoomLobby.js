@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef, useLayoutEffect } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import moment from "moment";
 import { Helmet } from "react-helmet";
@@ -195,7 +195,7 @@ const Completed = () => {
 };
 
 const EscapeRoomLobby = props => {
-  let {
+  const {
     game,
     room,
     stage,
@@ -205,9 +205,16 @@ const EscapeRoomLobby = props => {
     leader,
     completedGame
   } = useGame();
-  let [entered, setEntered] = useState(false);
-  let [screen, setScreen] = useState("");
-  let [team, setTeam] = useState();
+  const [entered, setEntered] = useState(false);
+  const [screen, setScreen] = useState("");
+
+  const videoBackgroundRef = useRef();
+
+  useLayoutEffect(() => {
+    videoBackgroundRef.current.addEventListener("loadeddata", () => {
+      console.log("LOADED DATA");
+    });
+  }, []);
 
   useEffect(() => {
     // GA log room visit
@@ -311,7 +318,7 @@ const EscapeRoomLobby = props => {
         <title>{`${render(room.title)} - Virtual Escape Room`}</title>
       </Helmet>
       {stage !== "playing" && stage !== "final" && <EscapeRoomInformation />}
-      {room.outro.background.type === "video" && (
+      {room.videoBackground && (
         <video
           autoPlay
           loop
@@ -319,7 +326,9 @@ const EscapeRoomLobby = props => {
           playsInline
           className="game__intro-video"
           id="js-intro-video"
-          src={room.outro.background.url}
+          src={room.videoBackground}
+          preload="auto"
+          ref={videoBackgroundRef}
         ></video>
       )}
       <div className="game__screen">{getScreen(screen)}</div>
