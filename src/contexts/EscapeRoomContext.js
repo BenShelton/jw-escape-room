@@ -356,10 +356,14 @@ function EscapeRoomProvider({ children }) {
       room.challenges[playingChallenge].questions,
       "answer"
     );
+    console.log("Answers", answers);
     const wrong = [];
-    answers.forEach((answer, i) =>
-      isCorrectAnswer(answer, submissions[i]) ? wrong.push(i) : null
-    );
+    answers.forEach((answer, i) => {
+      const result = isCorrectAnswer(answer, submissions[i]);
+      if (result === false) {
+        wrong.push(i);
+      }
+    });
     return wrong;
   };
 
