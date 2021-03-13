@@ -210,11 +210,14 @@ const EscapeRoomLobby = props => {
 
   const videoBackgroundRef = useRef();
 
-  useLayoutEffect(() => {
-    videoBackgroundRef.current.addEventListener("loadeddata", () => {
-      console.log("LOADED DATA");
-    });
-  }, []);
+  // OPTIMIZE: implement loading screen to disapear when video loads
+  // useLayoutEffect(() => {
+  //   if (room && room.videoBackground) {
+  //     videoBackgroundRef.current.addEventListener("loadeddata", () => {
+  //       console.log("LOADED DATA");
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     // GA log room visit

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import _ from "lodash";
 
+import { isCorrectAnswer } from "../helpers/utils";
 import db, { auth, rdb } from "../firebase";
 
 const EscapeRoomContext = React.createContext();
@@ -357,7 +358,7 @@ function EscapeRoomProvider({ children }) {
     );
     const wrong = [];
     answers.forEach((answer, i) =>
-      submissions[i] !== answer ? wrong.push(i) : null
+      isCorrectAnswer(answer, submissions[i]) ? wrong.push(i) : null
     );
     return wrong;
   };

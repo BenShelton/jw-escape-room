@@ -31,3 +31,8 @@ export const isVideo = (fileName = "") =>
   ["mp4", "MOV", "mov"].includes(fileName.match(/[^\\]*\.(\w+)$/)[1]);
 
 export const render = html => entities.decode(html);
+
+export const isCorrectAnswer = (correctAnswer, submission) => {
+  const regex = new RegExp(correctAnswer, "i");
+  return regex.test(submission.trim().replace(/ {2,}/g, " "));
+};

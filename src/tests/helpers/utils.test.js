@@ -102,4 +102,32 @@ describe("Utils", () => {
       expect(result).to.be.false;
     });
   });
+
+  describe("utils/isCorrectAnswer", () => {
+    it("should match regex from string", () => {
+      const result = utils.isCorrectAnswer(
+        "(THE)?s?DISTRICTs?OF(THE)?s?JORDAN",
+        "DISTRICTOFTHEJORDAN"
+      );
+      expect(result).to.eql(true);
+    });
+    it("should match regex from string and be case insensitive", () => {
+      const regexPattern = "(THE)?\\s?DISTRICT\\s?OF\\s?(THE)?\\s?JORDAN";
+      const result = utils.isCorrectAnswer(
+        // prettier-ignore
+        regexPattern,
+        "district of the Jordan"
+      );
+      expect(result).to.eql(true);
+    });
+    it("should match regex from string and remove double spaces", () => {
+      const regexPattern = "(THE)?\\s?DISTRICT\\s?OF\\s?(THE)?\\s?JORDAN";
+      const result = utils.isCorrectAnswer(
+        // prettier-ignore
+        regexPattern,
+        "district of the   Jordan "
+      );
+      expect(result).to.eql(true);
+    });
+  });
 });
