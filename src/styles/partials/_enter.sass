@@ -3,6 +3,33 @@
   align-items: center
   justify-content: center
   height: 100%
+  $self: &
+
+  &.view-transition--enter
+
+    #{$self}__inner
+      transition: all .5s
+      transform: translateY(-15%)
+      opacity: 0
+
+  &.view-transition--enter-active
+
+    #{$self}__inner
+      transform: translateY(0)
+      opacity: 1
+
+  &.view-transition--exit
+
+    #{$self}__inner
+      transition: all .5s
+      transform: translateY(0)
+      opacity: 1
+
+  &.view-transition--exit-active
+
+    #{$self}__inner
+      transform: translateY(-15%)
+      opacity: 0
 
   &__inner
     text-align: center

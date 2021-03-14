@@ -1,5 +1,26 @@
 .invitation
   color: #fff
+  // transition: opacity 1000ms
+  // overflow: hidden
+  $self: &
+
+  &.view-transition--exit
+
+    #{$self}__text
+      transition: all 1.3s
+
+    #{$self}__counter-container
+      transition: all 1.3s
+
+  &.view-transition--exit-active
+
+    #{$self}__text
+      transform: translateY(15%)
+      opacity: 0
+
+    #{$self}__counter-container
+      transform: translateY(-15%)
+      opacity: 0
 
   &__text
     position: relative

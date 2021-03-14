@@ -16,15 +16,6 @@ import EscapeRoomInformation from "./EscapeRoomInformation";
 import ZoomCredentials from "./ZoomCredentials";
 import Pulse from "./Pulse";
 
-// const Completed = () => {
-//   return (
-//     <Waiting
-//       text="Great Job!"
-//       subtext="The other teams are still finishing up. Sit tight, please keep this window open, the host will reveal the winner soon!"
-//     ></Waiting>
-//   );
-// };
-
 const EscapeRoomLobby = props => {
   const {
     game,
@@ -58,12 +49,6 @@ const EscapeRoomLobby = props => {
       label: room.title
     });
   }, []);
-
-  // useEffect(() => {
-  //   if (completedGame === true) {
-  //     setScreen("waiting:completed");
-  //   }
-  // }, [completedGame]);
 
   const mapPhaseToComponent = phase => {
     console.log("GOT PHASE", phase);
@@ -139,80 +124,6 @@ const EscapeRoomLobby = props => {
     setRenderComponent(Component);
   }, [phase]);
 
-  /**
-   * Listen to stage change and map stage to screen
-   */
-  // useEffect(() => {
-  //   console.log(`Deciding screen on stage ${stage}`);
-  //   switch (stage) {
-  //     case "dormant":
-  //       return setScreen("invite");
-  //     case "collecting":
-  //       return setScreen("enter");
-  //     case "dividing":
-  //       return setScreen("waiting:teams");
-  //     case "ready":
-  //       return setScreen("waiting:startgame");
-  //     case "playing":
-  //       return setScreen("play");
-  //     case "finishing":
-  //       return setScreen("waiting:calculating");
-  //     case "final":
-  //       return setScreen("showcase");
-  //     default:
-  //       return setScreen("loading");
-  //   }
-  // }, [stage]);
-  //
-  // useEffect(() => {
-  //   switch (stage) {
-  //     case "invite":
-  //       return <Invitation room={room} game={game} />;
-  //     case "enter":
-  //       return (
-  //         <Enter
-  //           room={room}
-  //           game={game}
-  //           currentPlayer={currentPlayer}
-  //           enterPlayer={enterPlayer}
-  //           setEntered={setEntered}
-  //           setScreen={setScreen}
-  //         />
-  //       );
-  //     case "waiting:host":
-  //       return <Waiting />;
-  //     case "waiting:teams":
-  //       return <Waiting text="Host is dividing teams" />;
-  //     case "waiting:startgame":
-  //       return (
-  //         <>
-  //           {leader && (
-  //             <Waiting
-  //               text="Waiting on host to start game"
-  //               subtext={
-  //                 leader.id === currentPlayer.uid
-  //                   ? `You are the team leader of <strong>${currentTeam.name}</strong>. Please make sure that you are able to share this screen.`
-  //                   : `You are on <strong>${currentTeam.name}</strong> and <strong>${leader.name}</strong> is your team leader.`
-  //               }
-  //             />
-  //           )}
-  //         </>
-  //       );
-  //     case "loading":
-  //       return <Waiting text="Loading" />;
-  //     case "play":
-  //       return <EscapeRoom />;
-  //     case "waiting:completed":
-  //       return <Completed />;
-  //     case "waiting:calculating":
-  //       return <Waiting text="Determining winners" />;
-  //     case "showcase":
-  //       return <EscapeRoomShowcase />;
-  //     default:
-  //       return <Waiting text="Loading" />;
-  //   }
-  // }, [stage]);
-
   return (
     <main
       className={`game ${
@@ -242,18 +153,17 @@ const EscapeRoomLobby = props => {
             ></video>
           )}
           <div className="game__screen">
-            {/* <SwitchTransition>
+            <SwitchTransition>
               <CSSTransition
-                key={RenderComponent.Component}
-                // addEndListener={(node, done) =>
-                //   node.addEventListener("transitionend", done, false)
-                // }
-                timeout={3000}
+                key={RenderComponent.Component + phase}
+                addEndListener={(node, done) =>
+                  node.addEventListener("transitionend", done, false)
+                }
                 classNames="view-transition-"
-              > */}
-            <RenderComponent.Component {...RenderComponent.props} />
-            {/* </CSSTransition>
-            </SwitchTransition> */}
+              >
+                <RenderComponent.Component {...RenderComponent.props} />
+              </CSSTransition>
+            </SwitchTransition>
           </div>
           <div className="game__overlay"></div>
         </>

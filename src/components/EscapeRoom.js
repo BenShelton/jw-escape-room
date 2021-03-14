@@ -62,7 +62,6 @@ const EscapeRoom = () => {
     setClue,
     usedClues,
     currentTeam,
-    setCompletedGame,
     setPhase
   } = useGame();
 

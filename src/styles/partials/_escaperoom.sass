@@ -4,6 +4,20 @@ $headerHeight: 125px
   $self: &
   height: 100%
   font-size: 1rem
+  overflow: hidden
+  transition: opacity 1.5s
+
+  &.view-transition--enter
+    opacity: 0
+
+  &.view-transition--enter-active
+    opacity: 1
+
+  &.view-transition--exit
+    opacity: 1
+
+  &.view-transition--exit-active
+    opacity: 0
 
   &__header
     display: flex
