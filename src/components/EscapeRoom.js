@@ -9,7 +9,7 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import "animate.css/animate.min.css";
 
 import unlockSound from "../sounds/unlock-sound.mp3";
-import { render } from "../helpers/utils";
+import { render, getChallengeTracker } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 
 const Timer = ({ hours, minutes, seconds, completed }) => {
@@ -157,31 +157,24 @@ const EscapeRoom = () => {
     setPhase("waiting:completed");
   };
 
-  const getChallengeTracker = () => {
-    switch (playingChallenge) {
-      case "intro":
-        return "Introduction";
-      case "outro":
-        return "Complete";
-      default:
-        return `${room.challengeMap.indexOf(playingChallenge) + 1} / ${
-          room.challengeMap.length
-        }`;
-    }
-  };
-
   return (
     <div className="escaperoom">
       <Helmet>
         <title>
-          {room && render(`${room.title} - ${getChallengeTracker()}`)}
+          {room &&
+            render(
+              `${room.title} - ${getChallengeTracker({
+                playingChallenge,
+                room
+              })}`
+            )}
         </title>
       </Helmet>
       <header className="escaperoom__header">
         <div className="escaperoom__header__meta">
           <h1>{currentTeam.name}</h1>
           <h2>{render(room.title)}</h2>
-          <h3>{getChallengeTracker()}</h3>
+          <h3>{getChallengeTracker({ playingChallenge, room })}</h3>
         </div>
         <div className="escaperoom__header__timer">
           {gameEndtime && (

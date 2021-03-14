@@ -181,7 +181,8 @@ const GameHostProvider = ({ children }) => {
     startGame,
     resetGame,
     teamsRef,
-    gameURL
+    gameURL,
+    room
   };
 
   return (

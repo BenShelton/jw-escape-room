@@ -36,3 +36,16 @@ export const isCorrectAnswer = (correctAnswer, submission) => {
   const regex = new RegExp(correctAnswer, "i");
   return regex.test(submission.trim().replace(/ {2,}/g, " "));
 };
+
+export const getChallengeTracker = ({ playingChallenge, room }) => {
+  switch (playingChallenge) {
+    case "intro":
+      return "Introduction";
+    case "outro":
+      return "Complete";
+    default:
+      return `${room.challengeMap.indexOf(playingChallenge) + 1} / ${
+        room.challengeMap.length
+      }`;
+  }
+};
