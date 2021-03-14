@@ -87,11 +87,16 @@
       animation-delay: 1000ms
 
     &--enter-done
-      transform: none
+      transform: translateY(0)
 
-    &--empty
+    &--late, &--empty
+      line-height: 1.5em
       padding: 15px
       max-width: 500px
+      position: absolute
+      bottom: 0
+      left: 50%
+      transform: translateX(-50%)
 
   &__zoom-pulse
     position: absolute

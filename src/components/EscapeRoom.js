@@ -62,7 +62,8 @@ const EscapeRoom = () => {
     setClue,
     usedClues,
     currentTeam,
-    setCompletedGame
+    setCompletedGame,
+    setPhase
   } = useGame();
 
   const [loadingChallenge, setLoadingChallenge] = useState(true);
@@ -83,6 +84,7 @@ const EscapeRoom = () => {
   }, [usedClues]);
 
   useEffect(() => {
+    console.log("got plating achhl", playingChallenge);
     if (!playingChallenge) return;
     switch (playingChallenge) {
       case "intro":
@@ -147,7 +149,9 @@ const EscapeRoom = () => {
   };
 
   const handleNonLeaderFinish = () => {
-    setCompletedGame(true);
+    // OPTIMIZE: this should be called from context,
+    // but theres no flag setup to handle non leader "next"
+    setPhase("waiting:completed");
   };
 
   const getChallengeTracker = () => {

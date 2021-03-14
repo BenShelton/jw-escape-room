@@ -29,6 +29,8 @@ function EscapeRoomProvider({ children }) {
   const [usedClues, setUsedClues] = useState([]);
   const [finalRankings, setFinalRankings] = useState();
   const [completedGame, setCompletedGame] = useState(false);
+  // use phase as another layer from stage to switch player/team/app specific logic
+  const [phase, setPhase] = useState("");
 
   let { gameId } = useParams();
 
@@ -52,6 +54,51 @@ function EscapeRoomProvider({ children }) {
       finishing: finishingTasks,
       final: finalTasks
     }[stage]);
+
+  const mapStageToPhase = stage => {
+    switch (stage) {
+      case "dormant":
+        return "inviting";
+
+      case "collecting":
+        return "entering";
+
+      case "dividing":
+        // OPTIMIZE: send to 404 or something less expensive
+        // if user did not join game in time
+        if (!currentPlayer) {
+          return "late";
+        }
+        return "waiting:teams";
+
+      case "ready":
+        if (!currentPlayer || !currentTeam) {
+          return "late";
+        }
+        return "waiting:ready";
+
+      case "playing":
+        if (!currentPlayer || !currentTeam) {
+          return "late";
+        }
+        return "playing";
+
+      case "finishing":
+        if (!currentPlayer || !currentTeam) {
+          return "late";
+        }
+        return "waiting:calculating";
+
+      case "final":
+        if (currentPlayer) {
+          return "showcase";
+        }
+        return "signoff";
+
+      default:
+        return "late";
+    }
+  };
 
   // OPTIMIZE: this could be written better
   // const getNeededTasks = stage => {
@@ -99,6 +146,14 @@ function EscapeRoomProvider({ children }) {
     console.log("Received pending stage", pendingStage);
     runTasks(pendingStage);
   }, [pendingStage]);
+
+  useEffect(() => {
+    // set phase with updated state from stage tasks
+    // (had to remove from scope to get new state )
+    const phase = mapStageToPhase(stage);
+    setPhase(phase);
+    console.log(`SETTING PHASE TO ${phase} ON STAGE ${stage}`);
+  }, [stage]);
 
   /**
    * Make sure that all necessary
@@ -333,12 +388,14 @@ function EscapeRoomProvider({ children }) {
         resolve(unsubscribe);
       });
     });
+    setPhase("waiting:joined");
     unsubscribeAuth();
   };
 
   const nextChallenge = async () => {
     if (currentTeam.currentChallenge === "outro") {
-      setCompletedGame(true);
+      // set phase to waiting screen
+      setPhase("waiting:completed");
     }
     if (!remainingChallenges.length) {
       return rdb
@@ -438,7 +495,9 @@ function EscapeRoomProvider({ children }) {
     usedClues,
     finalRankings,
     completedGame,
-    setCompletedGame
+    setCompletedGame,
+    phase,
+    setPhase
   };
 
   return (
