@@ -27,6 +27,8 @@ const GameHostProvider = ({ children }) => {
   const startTimeRef = rdb.ref(`er-games/${gameId}/startTime`);
   const rankingsRef = rdb.ref(`er-rankings/${gameId}`);
 
+  const countdownAnimationThreshold = 14;
+
   const initPlayerListeners = () => {
     const unsubscribeAdd = playersRef.on("child_added", snapshot =>
       setPlayers(prevState => ({
@@ -119,7 +121,11 @@ const GameHostProvider = ({ children }) => {
     setStage("playing");
     // set start time
     await Promise.all([
-      startTimeRef.set(moment().unix()),
+      startTimeRef.set(
+        moment()
+          .add(countdownAnimationThreshold, "seconds")
+          .unix()
+      ),
       resetTeamChallenges()
     ]);
     console.log("GAME STARTED!");

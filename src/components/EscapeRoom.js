@@ -8,6 +8,7 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import "animate.css/animate.min.css";
 
+import unlockSound from "../sounds/unlock-sound.mp3";
 import { render } from "../helpers/utils";
 import { useGame } from "../contexts/EscapeRoomContext";
 
@@ -68,6 +69,8 @@ const EscapeRoom = () => {
   const [loadingChallenge, setLoadingChallenge] = useState(true);
   const [challenge, setChallenge] = useState(null);
   const [gameEndtime, setGameEndtime] = useState();
+
+  const nextChallengeSound = new Audio(unlockSound);
 
   const formRef = useRef();
 
@@ -144,6 +147,7 @@ const EscapeRoom = () => {
       });
     }
     setLoadingChallenge(true);
+    nextChallengeSound.play();
     nextChallenge();
   };
 
