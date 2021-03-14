@@ -1,0 +1,52 @@
+.escaperoom-countdown
+  display: flex
+  height: 100%
+  min-height: 100vh
+
+  &__inner
+    margin: auto
+    position: relative
+    z-index: 2
+    transition: all .3s
+
+    &--enter, &--enter-done
+      opacity: 1
+
+    &--exit
+      transition-delay: 1s
+
+    &--exit-active
+      transform: scale(0.1)
+      opacity: 0
+
+    &--exit-done
+      opacity: 0
+
+  &__number
+    font-size: 50px
+    transition: all 300ms
+    color: #fff
+    font-weight: bold
+
+    &--enter
+      transform: scale(0.2)
+      opacity: 0
+
+    &--enter-active
+      transform: scale(1)
+      opacity: 1
+
+    &--exit
+      display: none
+
+  &__curtain
+    position: fixed
+    height: 100vh
+    width: 100vw
+    background: transparent
+    z-index: 1
+    transition: background-color 4.9s
+    transition-delay: 7s
+
+    &--close
+      background-color: #000

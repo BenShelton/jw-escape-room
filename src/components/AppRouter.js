@@ -17,7 +17,7 @@ import { getSubdomain } from "../helpers/utils";
 import AnalyticsTracker from "./AnalyticsTracker";
 import { TRACKING_ID } from "../constants";
 
-import EscapeRoomSignoff from "./EscapeRoomSignoff";
+import EscapeRoomStartCountdown from "./EscapeRoomStartCountdown";
 
 if (process.env.REACT_APP_FB_ENV === "production") {
   console.log("REPORTING ANALYTICS WITH ID " + TRACKING_ID);
@@ -41,7 +41,7 @@ const StandardRoutes = () => (
   <AuthProvider>
     <Switch>
       <Route path="/" component={LoginPage} exact />
-      <Route path="/signoff" component={EscapeRoomSignoff} exact />
+      <Route path="/countdown" component={EscapeRoomStartCountdown} exact />
       <Route path="/register" component={RegistrationPage} exact />
       <Route path="/forgot-password" component={ForgotPasswordPage} exact />
       <PrivateRoute path="/account" component={HostAccount} exact />

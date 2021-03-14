@@ -13,8 +13,7 @@ import EscapeRoomEnter from "./EscapeRoomEnter";
 import EscapeRoomWaiting from "./EscapeRoomWaiting";
 import EscapeRoomShowcase from "./EscapeRoomShowcase";
 import EscapeRoomInformation from "./EscapeRoomInformation";
-import ZoomCredentials from "./ZoomCredentials";
-import Pulse from "./Pulse";
+import EscapeRoomStartCountdown from "./EscapeRoomStartCountdown";
 
 const EscapeRoomLobby = props => {
   const {
@@ -25,7 +24,8 @@ const EscapeRoomLobby = props => {
     enterPlayer,
     currentTeam,
     leader,
-    phase
+    phase,
+    setPhase
   } = useGame();
 
   const [RenderComponent, setRenderComponent] = useState();
@@ -86,6 +86,13 @@ const EscapeRoomLobby = props => {
           }
         };
       case "playing":
+        return {
+          Component: EscapeRoomStartCountdown,
+          props: {
+            onComplete: () => setPhase("escaping")
+          }
+        };
+      case "escaping":
         return {
           Component: EscapeRoom
         };
