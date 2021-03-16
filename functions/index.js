@@ -116,9 +116,10 @@ exports.registerHost = functions.https.onCall(async (data, context) => {
   const MASTERKEY = "GameMasterHernandez";
   const { referralCode, firstName, lastName, email, password } = data;
   // allow entry for users with MASTERKEY
+  let findCosigners
   if (referralCode !== MASTERKEY) {
     // check for cosigner
-    const findCosigners = await admin
+    findCosigners = await admin
       .firestore()
       .collection("users")
       .where("referralCode", "==", referralCode)
