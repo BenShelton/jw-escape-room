@@ -62,36 +62,41 @@ const RegistrationPage = ({ location }) => {
     referralCodeRef.current.value = referralCodeParam || "";
   }, []);
 
+  const handleError = e => {
+    setError(e);
+    setLoading(false);
+  }
+
   const handleSubmit = async e => {
     // OPTIMIZE: implement validate.js
     e.preventDefault();
     setLoading(true);
     if (isEmpty(firstNameRef.current.value)) {
-      return setError("Please enter your first name.");
+      return handleError("Please enter your first name.");
     }
 
     if (isEmpty(lastNameRef.current.value)) {
-      return setError("Please enter your last name.");
+      return handleError("Please enter your last name.");
     }
 
     if (isEmpty(emailRef.current.value)) {
-      return setError("Please enter your email.");
+      return handleError("Please enter your email.");
     }
 
     if (isEmpty(passwordRef.current.value)) {
-      return setError("Please enter a password.");
+      return handleError("Please enter a password.");
     }
 
     if (isEmpty(passwordConfirmRef.current.value)) {
-      return setError("Please confirm your password.");
+      return handleError("Please confirm your password.");
     }
 
     if (isEmpty(referralCodeRef.current.value)) {
-      return setError("Please enter the referral code given to you.");
+      return handleError("Please enter the referral code given to you.");
     }
 
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      return setError("Passwords do not match.");
+      return handleError("Passwords do not match.");
     }
 
     try {
